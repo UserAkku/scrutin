@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  plan          String    @default("free")
+  auditsToday   Int       @default(0)
+  lastAuditDate DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  audits        Audit[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Audit {
+  id                 String   @id @default(cuid())
+  userId             String?
+  url                String
+  hostname           String
+  faviconUrl         String?
+  screenshotUrl      String?
+  isPublic           Boolean  @default(false)
+  isGuest            Boolean  @default(false)
+  status             String   @default("pending")
+  overallScore       Int      @default(0)
+  performanceScore   Int      @default(0)
+  seoScore           Int      @default(0)
+  securityScore      Int      @default(0)
+  uxScore            Int      @default(0)
+  accessibilityScore Int      @default(0)
+  technicalScore     Int      @default(0)
+  performanceData    Json?
+  seoData            Json?
+  securityData       Json?
+  uxData             Json?
+  accessibilityData  Json?
+  technicalData      Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  issues             Issue[]
+}
+
+model Issue {
+  id            String @id @default(cuid())
+  auditId       String
+  category      String
+  severity      String
+  title         String
+  description   String @db.Text
+  fixSuggestion String @db.Text
+  impact        String?
+  effort        String?
+  audit         Audit  @relation(fields: [auditId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
