@@ -9,7 +9,7 @@ export function Accordion(props: React.ComponentPropsWithoutRef<typeof Accordion
 }
 
 export function AccordionItem(props: React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>) {
-  return <AccordionPrimitive.Item className="border-b border-black/15" {...props} />;
+  return <AccordionPrimitive.Item className="border-b border-foreground/15" {...props} />;
 }
 
 export function AccordionTrigger({

@@ -12,9 +12,27 @@
   --success: #1d8f52;
   --warning: #d6a106;
   --danger: #c73f18;
+  --shadow-color: 0, 0, 0;
   --font-display: var(--font-press);
   --font-body: var(--font-space);
   --font-mono: var(--font-plex-mono);
+  --bg-overlay: linear-gradient(to bottom, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35));
+  --bg-glow: radial-gradient(circle at top left, rgba(0, 0, 0, 0.04), transparent 35%);
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #fcfcfc;
+  --panel: #0a0a0a;
+  --border: #222222;
+  --accent: #fcfcfc;
+  --muted: #1f1f1f;
+  --success: #22c55e;
+  --warning: #eab308;
+  --danger: #ef4444;
+  --shadow-color: 255, 255, 255;
+  --bg-overlay: none;
+  --bg-glow: radial-gradient(circle at top left, rgba(255, 255, 255, 0.03), transparent 35%);
 }
 
 * {
@@ -27,9 +45,7 @@ html {
 
 body {
   margin: 0;
-  background:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)),
-    radial-gradient(circle at top left, rgba(0, 0, 0, 0.04), transparent 35%);
+  background: var(--bg-overlay), var(--bg-glow);
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), sans-serif;

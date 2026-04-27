@@ -27,8 +27,8 @@ const config: Config = {
         mono: ["var(--font-mono)"]
       },
       boxShadow: {
-        brutal: "8px 8px 0 0 rgba(0,0,0,0.95)",
-        inset: "inset 0 0 0 1px rgba(15,15,15,0.12)"
+        brutal: "8px 8px 0 0 rgba(var(--shadow-color), 0.95)",
+        inset: "inset 0 0 0 1px rgba(var(--shadow-color), 0.12)"
       },
       borderRadius: {
         xl: "1.5rem",

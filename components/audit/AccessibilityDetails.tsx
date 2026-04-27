@@ -14,7 +14,7 @@ export function AccessibilityDetails({ data }: { data: Record<string, unknown> |
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {items.map(([label, value]) => (
-        <div key={label} className="border border-black/10 p-4 text-sm">
+        <div key={label} className="border border-border p-4 text-sm">
           <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">{label}</p>
           <p className="mt-2 font-display text-2xl">{String(value ?? "N/A")}</p>
         </div>

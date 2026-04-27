@@ -33,7 +33,7 @@ export default function SignupPage() {
     <div className="mx-auto max-w-md px-4 py-16">
       <Card className="p-8">
         <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">Create account</p>
-        <h1 className="mt-3 font-display text-3xl uppercase">Unlock Full Analysis</h1>
+        <h1 className="mt-3 font-display text-2xl uppercase sm:text-3xl">Unlock Full Analysis</h1>
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <Input placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} />
           <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />

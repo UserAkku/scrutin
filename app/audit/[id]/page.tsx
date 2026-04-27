@@ -60,7 +60,7 @@ export default async function AuditPage({ params }: { params: { id: string } }) 
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               {audit.faviconUrl ? (
-                <img src={audit.faviconUrl} alt="" width={32} height={32} className="rounded-full border border-black/10" />
+                <img src={audit.faviconUrl} alt="" width={32} height={32} className="rounded-full border border-border" />
               ) : null}
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">Audit report</p>
@@ -103,7 +103,7 @@ export default async function AuditPage({ params }: { params: { id: string } }) 
         <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">Quick wins</p>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           {quickWins.map((item) => (
-            <div key={`${item.category}-${item.title}`} className="border border-black/10 p-4">
+            <div key={`${item.category}-${item.title}`} className="border border-border p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">{item.category}</p>
               <h3 className="mt-2 font-semibold">{item.title}</h3>
               <p className="mt-2 text-sm leading-7 text-foreground/70">{item.fixSuggestion}</p>

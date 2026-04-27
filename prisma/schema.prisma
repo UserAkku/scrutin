@@ -21,8 +21,8 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
-  sessions      Session[]
   audits        Audit[]
+  sessions      Session[]
 }
 
 model Account {
@@ -31,12 +31,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -76,21 +76,21 @@ model Audit {
   technicalData      Json?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  user               User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user               User?    @relation(fields: [userId], references: [id])
   issues             Issue[]
 }
 
 model Issue {
-  id            String @id @default(cuid())
+  id            String  @id @default(cuid())
   auditId       String
   category      String
   severity      String
   title         String
-  description   String @db.Text
-  fixSuggestion String @db.Text
+  description   String
+  fixSuggestion String
   impact        String?
   effort        String?
-  audit         Audit  @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  audit         Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

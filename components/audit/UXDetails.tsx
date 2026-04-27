@@ -8,7 +8,7 @@ export function UXDetails({ data }: { data: Record<string, unknown> | null }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-[1.5rem] border border-black/10">
+    <div className="overflow-hidden rounded-[1.5rem] border border-border">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={screenshotUrl}
