@@ -41,8 +41,8 @@ export function ScoreGauge({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-2xl text-foreground">{score}</span>
-        {label ? <span className="text-[10px] uppercase tracking-[0.18em] text-foreground/60">{label}</span> : null}
+        <span className="font-display text-2xl">{score}</span>
+        {label ? <span className="text-[10px] uppercase tracking-[0.18em] opacity-60">{label}</span> : null}
       </div>
     </div>
   );

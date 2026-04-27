@@ -39,12 +39,15 @@ export async function POST(request: Request) {
     });
 
     if (session?.user) {
+      const today = new Date().toDateString();
+      const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+      const lastDate = user?.lastAuditDate?.toDateString();
+      const isNewDay = lastDate !== today;
+
       await prisma.user.update({
         where: { id: session.user.id },
         data: {
-          auditsToday: {
-            increment: 1
-          },
+          auditsToday: isNewDay ? 1 : { increment: 1 },
           lastAuditDate: new Date()
         }
       });

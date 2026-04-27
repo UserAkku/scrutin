@@ -33,7 +33,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md px-4 py-16">
       <Card className="p-8">
         <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">Login</p>
-        <h1 className="mt-3 font-display text-3xl uppercase">Return to the Console</h1>
+        <h1 className="mt-3 font-display text-2xl uppercase sm:text-3xl">Return to the Console</h1>
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <Input type="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
           <Input type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />

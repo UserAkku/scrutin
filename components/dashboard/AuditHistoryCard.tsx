@@ -39,7 +39,7 @@ export function AuditHistoryCard({
   return (
     <Card className="p-6">
       <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">{audit.status}</p>
-      <h3 className="mt-3 font-display text-2xl uppercase break-all">{audit.url}</h3>
+      <h3 className="mt-3 font-display text-sm uppercase leading-normal break-all sm:text-base md:text-xl lg:text-2xl line-clamp-2">{audit.url}</h3>
       <p className="mt-3 text-sm text-foreground/65">{formatDate(audit.createdAt)}</p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href={`/audit/${audit.id}`}>

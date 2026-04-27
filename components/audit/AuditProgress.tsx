@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ProgressEvent } from "@/types/audit";
 import { Card } from "@/components/shared/card";
 import { ProgressBar } from "@/components/shared/progress";
@@ -10,6 +11,7 @@ const labels = ["performance", "seo", "security", "ux", "accessibility", "techni
 export function AuditProgress({ auditId }: { auditId: string }) {
   const [events, setEvents] = useState<Record<string, ProgressEvent>>({});
   const [overall, setOverall] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const source = new EventSource(`/api/audit/${auditId}/stream`);
@@ -23,10 +25,11 @@ export function AuditProgress({ auditId }: { auditId: string }) {
       }
       if (payload.status === "complete" && !payload.category) {
         source.close();
+        router.refresh();
       }
     };
     return () => source.close();
-  }, [auditId]);
+  }, [auditId, router]);
 
   const completed = labels.filter((label) => events[label]?.status === "complete").length;
   const progress = Math.round((completed / labels.length) * 100);
@@ -44,7 +47,7 @@ export function AuditProgress({ auditId }: { auditId: string }) {
         <ProgressBar value={progress} />
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {labels.map((label) => (
-            <div key={label} className="border border-black/10 p-3 text-sm uppercase tracking-[0.14em]">
+            <div key={label} className="border border-border p-3 text-sm uppercase tracking-[0.14em]">
               <div className="flex items-center justify-between">
                 <span>{label}</span>
                 <span>{events[label]?.status ?? "queued"}</span>
@@ -56,3 +59,4 @@ export function AuditProgress({ auditId }: { auditId: string }) {
     </Card>
   );
 }
+

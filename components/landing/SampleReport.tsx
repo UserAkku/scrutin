@@ -24,7 +24,7 @@ export function SampleReport() {
     <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
       <div className="mb-10">
         <p className="text-xs uppercase tracking-[0.22em] text-foreground/55">Sample issues</p>
-        <h2 className="mt-3 font-display text-3xl uppercase sm:text-4xl">What a Full Report Feels Like</h2>
+        <h2 className="mt-3 font-display text-2xl uppercase leading-tight sm:text-3xl md:text-4xl">What a Full Report Feels Like</h2>
       </div>
       <div className="grid gap-5 lg:grid-cols-3">
         {issues.map((issue) => (
