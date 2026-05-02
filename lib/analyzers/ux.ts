@@ -1,4 +1,4 @@
-import { fetchImageAsInlinePart, generateJson } from "@/lib/gemini";
+import { fetchImageAsInlinePart, generateJson, defaultIssueSchema } from "@/lib/gemini";
 import { scoreFromIssueDensity } from "@/lib/scoring";
 import { getGrade } from "@/lib/utils";
 import type { CategoryResult } from "@/types/audit";
@@ -14,17 +14,28 @@ interface MicrolinkResponse {
 
 export async function analyzeUx(targetUrl: string): Promise<CategoryResult> {
   const snapshot = await fetchHtmlSnapshot(targetUrl);
+  let imagePart;
   let screenshotUrl = "";
-  try {
-    const microlink = await fetchJson<MicrolinkResponse>(
-      `https://api.microlink.io/?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url`
-    );
-    screenshotUrl = microlink.data?.screenshot?.url ?? "";
-  } catch {
-    screenshotUrl = "";
-  }
 
-  const imagePart = screenshotUrl ? await fetchImageAsInlinePart(screenshotUrl) : undefined;
+  if (snapshot.screenshotBase64) {
+    imagePart = {
+      inlineData: {
+        data: snapshot.screenshotBase64,
+        mimeType: "image/png"
+      }
+    };
+    screenshotUrl = `data:image/png;base64,${snapshot.screenshotBase64}`;
+  } else {
+    try {
+      const microlink = await fetchJson<MicrolinkResponse>(
+        `https://api.microlink.io/?url=${encodeURIComponent(targetUrl)}&screenshot=true&meta=false&embed=screenshot.url`
+      );
+      screenshotUrl = microlink.data?.screenshot?.url ?? "";
+    } catch {
+      screenshotUrl = "";
+    }
+    imagePart = screenshotUrl ? await fetchImageAsInlinePart(screenshotUrl) : undefined;
+  }
 
   let response:
     | {
@@ -57,7 +68,8 @@ export async function analyzeUx(targetUrl: string): Promise<CategoryResult> {
       `You are a senior UX/UI designer and CRO specialist. Analyze this website screenshot and HTML.
 Return JSON with "summary", "issues", and "wins".
 HTML excerpt: ${snapshot.html.slice(0, 10000)}`,
-      imagePart ? [imagePart] : []
+      imagePart ? [imagePart] : [],
+      defaultIssueSchema
     );
   } catch {
     response = null;

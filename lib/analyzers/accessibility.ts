@@ -1,4 +1,4 @@
-import { generateJson } from "@/lib/gemini";
+import { generateJson, defaultIssueSchema } from "@/lib/gemini";
 import { scoreFromIssueDensity } from "@/lib/scoring";
 import { getGrade } from "@/lib/utils";
 import type { AuditIssue, CategoryResult } from "@/types/audit";
@@ -56,7 +56,9 @@ Generic links: ${genericLinks}
 Has html lang: ${hasLang}
 Has skip link: ${skipLink}
 Landmarks count: ${landmarks}
-HTML excerpt: ${html.slice(0, 12000)}`
+HTML excerpt: ${html.slice(0, 12000)}`,
+      [],
+      defaultIssueSchema
     );
   } catch {
     aiResponse = null;

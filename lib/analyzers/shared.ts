@@ -7,6 +7,8 @@ export interface HtmlSnapshot {
   root: ReturnType<typeof parse>;
   headers: Headers;
   responseTimeMs: number;
+  isHeadersFromProxy: boolean;
+  screenshotBase64?: string;
 }
 
 export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot> {
@@ -21,7 +23,40 @@ export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot
     "Accept-Language": "en-US,en;q=0.9"
   };
 
+  try {
+    const puppeteer = (await import("puppeteer")).default;
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const page = await browser.newPage();
+    const response = await page.goto(normalized, { waitUntil: "networkidle2", timeout: 15000 });
+    
+    if (response && response.ok()) {
+      const html = await page.content();
+      const headersObj = response.headers();
+      const puppeteerHeaders = new Headers();
+      for (const [key, value] of Object.entries(headersObj)) {
+        puppeteerHeaders.append(key, value);
+      }
+      await page.setViewport({ width: 1280, height: 800 });
+      const screenshotBase64 = await page.screenshot({ encoding: "base64" });
+      await browser.close();
+      
+      return {
+        url: normalized,
+        html,
+        root: parse(html),
+        headers: puppeteerHeaders,
+        responseTimeMs: Date.now() - startedAt,
+        isHeadersFromProxy: false,
+        screenshotBase64
+      };
+    }
+    await browser.close();
+  } catch (error) {
+    // Puppeteer failed or timed out, fallback to traditional fetch
+  }
+
   let response: Response | null = null;
+  let directGetSuccess = false;
   try {
     response = await retry(
       () =>
@@ -32,13 +67,18 @@ export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot
         }),
       2
     );
+    if (response && response.ok) {
+        directGetSuccess = true;
+    }
   } catch {
     response = null;
   }
 
+  let finalHeaders = response?.headers ?? new Headers(headers);
+  
   if (!response?.ok) {
     const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(normalized)}`;
-    response = await retry(
+    const proxyResponse = await retry(
       () =>
         fetch(proxiedUrl, {
           cache: "no-store",
@@ -46,10 +86,26 @@ export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot
         }),
       2
     );
+    if (!proxyResponse.ok) {
+      throw new Error(`HTML fetch failed (${proxyResponse.status})`);
+    }
+    response = proxyResponse;
+  } else if (response.ok) {
+      finalHeaders = response.headers;
   }
 
-  if (!response.ok) {
-    throw new Error(`HTML fetch failed (${response.status})`);
+  let isHeadersFromProxy = false;
+  // Ensure we capture real target headers before attempting a proxy for the body if needed
+  let initialResponse: Response | null = null;
+  try {
+       initialResponse = await retry(() => fetch(normalized, { method: "HEAD", headers }), 1);
+       if (initialResponse && initialResponse.ok) {
+           finalHeaders = initialResponse.headers;
+       } else {
+           isHeadersFromProxy = !directGetSuccess;
+       }
+  } catch {
+       isHeadersFromProxy = !directGetSuccess;
   }
 
   const html = await response.text();
@@ -57,8 +113,9 @@ export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot
     url: normalized,
     html,
     root: parse(html),
-    headers: response.headers,
-    responseTimeMs: Date.now() - startedAt
+    headers: finalHeaders,
+    responseTimeMs: Date.now() - startedAt,
+    isHeadersFromProxy
   };
 }
 

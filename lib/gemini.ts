@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
+import { GoogleGenerativeAI, type Part, type Schema, SchemaType } from "@google/generative-ai";
 import { getGeminiApiKey } from "@/lib/env";
 import { retry } from "@/lib/utils";
 
@@ -8,13 +8,45 @@ function getClient() {
   return new GoogleGenerativeAI(getGeminiApiKey());
 }
 
-export async function generateJson<T>(prompt: string, parts: Part[] = []) {
+export const defaultIssueSchema: Schema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    summary: { type: SchemaType.STRING },
+    issues: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          title: { type: SchemaType.STRING },
+          description: { type: SchemaType.STRING },
+          fixSuggestion: { type: SchemaType.STRING },
+          severity: { type: SchemaType.STRING, enum: ["critical", "medium", "low"] },
+          impact: { type: SchemaType.STRING },
+          effort: { type: SchemaType.STRING }
+        },
+        required: ["title", "description", "fixSuggestion", "severity", "impact", "effort"]
+      }
+    },
+    passedChecks: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING }
+    },
+    wins: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING }
+    }
+  },
+  required: ["summary", "issues"]
+};
+
+export async function generateJson<T>(prompt: string, parts: Part[] = [], schema?: Schema) {
   return retry(async () => {
     const client = getClient();
     const model = client.getGenerativeModel({
       model: DEFAULT_GEMINI_MODEL,
       generationConfig: {
-        responseMimeType: "application/json"
+        responseMimeType: "application/json",
+        responseSchema: schema
       }
     });
 

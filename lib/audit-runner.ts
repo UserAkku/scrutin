@@ -5,7 +5,7 @@ import type { AuditCategory, CategoryResult, ProgressEvent } from "@/types/audit
 import { calculateOverallScore } from "@/lib/scoring";
 import { analyzePerformance } from "@/lib/analyzers/performance";
 import { analyzeSeo } from "@/lib/analyzers/seo";
-import { analyzeSecurity } from "@/lib/analyzers/security";
+import { analyzeSecurity } from "@/lib/analyzers/security/index";
 import { analyzeUx } from "@/lib/analyzers/ux";
 import { analyzeAccessibility } from "@/lib/analyzers/accessibility";
 import { analyzeTechnical } from "@/lib/analyzers/technical";
@@ -29,15 +29,21 @@ function normalizeSeverity(raw: string | undefined | null): string {
 }
 
 function mapResultToUpdate(result: CategoryResult): Prisma.AuditUpdateInput {
-  const issuePayload = result.issues.map((issue) => ({
-    category: issue.category || result.category,
-    severity: normalizeSeverity(issue.severity),
-    title: issue.title || `${result.category} issue detected`,
-    description: issue.description || "An issue was detected during the audit.",
-    fixSuggestion: issue.fixSuggestion || "Review this area and apply best practices.",
-    impact: issue.impact ?? null,
-    effort: issue.effort ?? null
-  }));
+  const issuePayload = result.issues.map((issue) => {
+    const categoryName = (issue.category || result.category).toUpperCase();
+    const fallbackTitle = `${categoryName} Issue: Automated Check Failed`;
+    const fallbackDescription = `The automated audit detected an irregularity in the ${categoryName} category. Please review manually.`;
+    
+    return {
+      category: issue.category || result.category,
+      severity: normalizeSeverity(issue.severity),
+      title: issue.title || fallbackTitle,
+      description: issue.description || fallbackDescription,
+      fixSuggestion: issue.fixSuggestion || "Investigate the element related to this check and apply standard best practices.",
+      impact: issue.impact ?? null,
+      effort: issue.effort ?? null
+    };
+  });
 
   return {
     [`${result.category}Score`]: result.score,

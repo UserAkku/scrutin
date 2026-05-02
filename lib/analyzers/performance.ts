@@ -1,4 +1,4 @@
-import { generateJson } from "@/lib/gemini";
+import { generateJson, defaultIssueSchema } from "@/lib/gemini";
 import { getPageSpeedApiKey } from "@/lib/env";
 import { getGrade } from "@/lib/utils";
 import type { CategoryResult, PerformanceMetric } from "@/types/audit";
@@ -152,7 +152,9 @@ Return JSON with an "issues" array only.
 Performance score mobile: ${mobileScore}
 Performance score desktop: ${desktopScore}
 Opportunities: ${JSON.stringify(opportunities)}
-Diagnostics: ${JSON.stringify(diagnostics)}`
+Diagnostics: ${JSON.stringify(diagnostics)}`,
+      [],
+      defaultIssueSchema
     );
   } catch {
     suggestions = null;
