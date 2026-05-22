@@ -63,15 +63,6 @@ function checkSecurityHeaders(headers: Headers): HeaderCheck[] {
     description: "Restricts browser features like camera, microphone, and geolocation."
   });
 
-  const xxss = headers.get("x-xss-protection");
-  checks.push({
-    name: "X-XSS-Protection",
-    header: "x-xss-protection",
-    pass: Boolean(xxss),
-    value: xxss,
-    weight: 5,
-    description: "Legacy XSS filter header for older browsers."
-  });
 
   const coop = headers.get("cross-origin-opener-policy");
   checks.push({

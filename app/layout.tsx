@@ -1,52 +1,43 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Press_Start_2P, Space_Grotesk } from "next/font/google";
+import { Anton, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
-import { ThemeProvider } from "@/components/shared/ThemeProvider";
 
-const display = Press_Start_2P({
-  subsets: ["latin"],
+const anton = Anton({
   weight: "400",
-  variable: "--font-press"
+  subsets: ["latin"],
+  variable: "--font-anton",
 });
 
-const body = Space_Grotesk({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-space"
-});
-
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono"
+  variable: "--font-playfair",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
-  title: "Scrutin",
-  description: "Mission-critical website audits with exact fixes for performance, SEO, security, UX, accessibility, and technical health.",
-  openGraph: {
-    title: "Scrutin",
-    description: "Mission-critical website audits with exact fixes.",
-    images: ["/og-image.svg"]
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Scrutin",
-    description: "Mission-critical website audits with exact fixes."
-  }
+  title: "Scrutin | Website Audit Tool",
+  description: "Mission-critical website audits with exact fixes.",
 };
+
+import { Providers } from "./providers";
+import NextTopLoader from "nextjs-toploader";
+
+import { ClientFooterWrapper } from "@/components/shared/ClientFooterWrapper";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`} suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <html lang="en" className={`${anton.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col bg-[var(--bg)] text-[var(--text-primary)]">
+        <NextTopLoader color="#1C1919" height={4} showSpinner={false} shadow="none" zIndex={1600} />
+        <Providers>
           <Navbar />
           <main className="flex-1">{children}</main>
-          <Footer />
-        </ThemeProvider>
+          <ClientFooterWrapper>
+            <Footer />
+          </ClientFooterWrapper>
+        </Providers>
       </body>
     </html>
   );

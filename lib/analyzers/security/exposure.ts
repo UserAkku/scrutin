@@ -83,6 +83,21 @@ export async function runExposureModule(origin: string): Promise<SecurityModuleR
       const { entry, status } = result.value;
 
       if (status === 200) {
+        const contentType = res?.headers.get("content-type") || "";
+        const isHtmlContent = contentType.includes("text/html");
+        const isHtmlFile = entry.path.endsWith(".html") || entry.path.endsWith("/");
+
+        // Smart check for SPA catch-all routes: If it's a 200 OK but returning HTML for a non-HTML path, it's a false positive.
+        if (isHtmlContent && !isHtmlFile && !entry.path.includes("admin") && !entry.path.includes("debug")) {
+          // False positive catch-all route, ignore
+          continue;
+        }
+        
+        // Skip GraphQL false positives (often just returning a 200 for missing POST body)
+        if (entry.path.includes("graphql") && isHtmlContent) {
+           continue;
+        }
+
         exposedPaths.push(entry.path);
         issues.push({
           title: `Sensitive file exposed: ${entry.path}`,

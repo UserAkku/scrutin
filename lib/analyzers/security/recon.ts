@@ -16,7 +16,7 @@ const PII_PATTERNS = [
   { name: "Credit card number",  regex: /\b(?:\d[ \-]?){13,16}\b/g },
 ];
 
-const INTERESTING_ROBOTS_PATHS = ["/admin", "/api", "/internal", "/staging", "/backup", "/private", "/secret", "/dashboard"];
+const INTERESTING_ROBOTS_PATHS = ["/admin", "/internal", "/staging", "/backup", "/private", "/secret", "/dashboard"];
 
 export async function runReconModule(
   html: string,
@@ -225,32 +225,7 @@ export async function runReconModule(
     data.publicBuckets = foundBuckets.size;
   }
 
-  // --- Rate limiting detection ---
-  let rateLimit429 = false;
-  try {
-    for (let i = 0; i < 15; i++) {
-      const rlRes = await safeFetchWithTimeout(targetUrl, { method: "HEAD" }, 3000);
-      if (rlRes && rlRes.status === 429) {
-        rateLimit429 = true;
-        break;
-      }
-    }
-    if (!rateLimit429) {
-      issues.push({
-        title: "No rate limiting detected",
-        description: "15 rapid sequential requests did not trigger a 429 response. Note: this is a basic check; rate limiting may exist at a different layer.",
-        fixSuggestion: "Implement rate limiting to prevent brute-force and DDoS attacks.",
-        severity: "medium",
-        impact: "Without rate limiting, attackers can perform brute-force attacks.",
-        effort: "1 hour"
-      });
-    } else {
-      passedChecks.push("Rate limiting detected");
-    }
-  } catch {
-    // skip
-  }
-  data.rateLimitDetected = rateLimit429;
+  // Rate limiting check removed (flaky and causes false positives)
 
   // --- Email harvesting ---
   const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;

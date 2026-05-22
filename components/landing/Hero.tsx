@@ -1,69 +1,73 @@
-import { AuditInputForm } from "@/components/landing/AuditInputForm";
-import { Card } from "@/components/shared/card";
-import { ScoreGauge } from "@/components/shared/ScoreGauge";
-import { ShieldIcon, TimerIcon, ZapIcon } from "@/components/shared/icons";
+import { AuditInputForm } from "./AuditInputForm";
+
+function NeoBrutalistCard() {
+  return (
+    <div className="relative w-full max-w-[520px] mx-auto xl:ml-auto xl:mr-0 z-10 font-display">
+      <div className="bg-[var(--pastel-blue)] brutal-card p-6 md:p-8 relative mb-6 hover:-translate-y-1 transition-transform">
+        <div className="brutal-badge -top-4 -right-4 bg-white text-xl">★</div>
+        <p className="font-body text-xl text-brutal-black font-bold mb-4 pr-12">
+          Overall Structural Score
+        </p>
+        <h2 className="text-8xl lg:text-[9rem] leading-none text-brutal-black tracking-tighter">
+          98%
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6 mb-8">
+        <div className="bg-[var(--pastel-pink)] brutal-card p-6 relative hover:-translate-y-1 transition-transform">
+          <div className="brutal-badge -top-4 -right-4 bg-white text-sm">✓</div>
+          <p className="font-body text-lg font-bold text-brutal-black mb-2 uppercase">Performance</p>
+          <h2 className="text-5xl lg:text-6xl text-brutal-black tracking-tighter font-display">92</h2>
+        </div>
+        
+        <div className="bg-[var(--pastel-green)] brutal-card p-6 relative hover:-translate-y-1 transition-transform">
+          <div className="brutal-badge -top-4 -right-4 bg-white text-sm">✓</div>
+          <p className="font-body text-lg font-bold text-brutal-black mb-2 uppercase">SEO Score</p>
+          <h2 className="text-5xl lg:text-6xl text-brutal-black tracking-tighter font-display">96</h2>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 mt-2">
+        <h3 className="text-3xl text-brutal-black whitespace-nowrap">Recent Audits</h3>
+        <div className="flex-1 h-[4px] bg-brutal-black"></div>
+        <div className="w-14 h-14 flex-shrink-0 bg-brutal-black rounded-full shadow-brutal flex items-center justify-center text-4xl text-white font-body cursor-pointer hover:-translate-y-1 hover:shadow-brutal-lg transition-transform">
+          +
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border flex items-center min-h-[calc(100vh-73px)]">
-      <div className="mx-auto w-full grid max-w-7xl gap-10 px-4 py-12 md:px-8 lg:grid-cols-[1.2fr_0.8fr] lg:py-0">
-        <div className="space-y-8 flex flex-col justify-center">
-          <p className="max-w-xs text-xs uppercase tracking-[0.22em] text-foreground/60">
-            Daily repetition. System logging. Structural integrity for every public website you ship.
-          </p>
-          <div className="space-y-5">
-            <h1 className="max-w-4xl font-display text-2xl uppercase leading-[1.2] sm:text-4xl lg:text-5xl xl:text-6xl">
-              Audit Every Page Like It&apos;s Mission Critical.
-            </h1>
-            <p className="max-w-2xl text-sm leading-7 text-foreground/75 sm:text-base sm:leading-8">
-              Enter your website URL and get a professional audit report in under two minutes. Performance, SEO, security, UX, accessibility, and technical fixes are mapped into exact action steps.
-            </p>
+    <section className="relative overflow-hidden bg-[var(--bg)]">
+      <div className="mx-auto flex flex-col justify-center max-w-7xl px-4 py-12 md:px-8 md:py-20 lg:min-h-[85vh]">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-12">
+          
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border-[3px] border-brutal-black bg-white px-4 py-1.5 font-display text-sm tracking-wider uppercase mb-8 shadow-[2px_2px_0px_0px_#2D2323]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+              Professional Website Audit Tool
+            </div>
+            
+            <div className="space-y-6 mb-10">
+              <h1 className="text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] text-brutal-black font-display uppercase tracking-tight">
+                Destroy Your Website's <br className="hidden sm:block" />
+                Hidden Bugs.
+              </h1>
+            </div>
+            
+            <AuditInputForm />
           </div>
-          <AuditInputForm />
-          <div className="flex flex-col gap-2 text-[10px] uppercase tracking-[0.18em] text-foreground/65 sm:flex-row sm:flex-wrap sm:gap-4 sm:text-xs">
-            <span>10,000+ websites analyzed</span>
-            <span>Guest audits available</span>
-            <span>Exportable PDF reports</span>
+
+          <div className="hidden md:block">
+            <NeoBrutalistCard />
           </div>
+          
         </div>
-        <Card className="grid gap-8 bg-foreground dark:bg-panel p-6 sm:p-8 text-background dark:text-foreground shadow-brutal">
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-background/70 dark:text-foreground/70 sm:text-xs">Live score preview</p>
-              <h2 className="mt-3 max-w-[200px] font-display text-xl uppercase leading-tight sm:max-w-none sm:text-2xl md:text-3xl">Structural Status</h2>
-            </div>
-            <div className="shrink-0">
-              <ScoreGauge score={86} label="overall" />
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              ["Performance", "92"],
-              ["SEO", "84"],
-              ["Security", "78"],
-              ["UX/UI", "88"]
-            ].map(([label, score]) => (
-              <div key={label} className="border border-white/20 dark:border-border p-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-background/55 dark:text-foreground/55">{label}</p>
-                <p className="mt-3 font-display text-3xl">{score}</p>
-              </div>
-            ))}
-          </div>
-          <div className="grid gap-4 text-sm text-background/80 dark:text-foreground/80">
-            <div className="flex items-center gap-3">
-              <ZapIcon className="h-4 w-4" />
-              Render-blocking CSS delaying first paint by 540 ms.
-            </div>
-            <div className="flex items-center gap-3">
-              <ShieldIcon className="h-4 w-4" />
-              Missing `Content-Security-Policy` and weak cookie flags.
-            </div>
-            <div className="flex items-center gap-3">
-              <TimerIcon className="h-4 w-4" />
-              Quick wins ready with step-by-step remediation paths.
-            </div>
-          </div>
-        </Card>
       </div>
     </section>
   );

@@ -245,7 +245,13 @@ export async function runClientSideModule(
   for (const ep of endpointArray) {
     try {
       const epRes = await safeFetchWithTimeout(`${origin}${ep}`, { method: "HEAD" }, 5000);
-      if (epRes && epRes.ok) openEndpoints++;
+      if (epRes && epRes.ok) {
+        // Skip false positives from SPA catch-all routes returning HTML
+        const contentType = epRes.headers.get("content-type") || "";
+        if (!contentType.includes("text/html")) {
+          openEndpoints++;
+        }
+      }
     } catch {
       // skip
     }
@@ -253,10 +259,10 @@ export async function runClientSideModule(
   if (openEndpoints > 0 && endpointArray.length > 0) {
     issues.push({
       title: `${openEndpoints} API endpoint(s) respond without authentication`,
-      description: `Found ${discoveredEndpoints.size} API endpoints in JS bundles. ${openEndpoints} responded with 200 to unauthenticated HEAD requests.`,
+      description: `Found ${discoveredEndpoints.size} API endpoints in JS bundles. ${openEndpoints} responded with 200 (JSON/Data) to unauthenticated HEAD requests.`,
       fixSuggestion: "Ensure all API endpoints require proper authentication and authorization.",
-      severity: "medium",
-      impact: "Unauthenticated API access can lead to data leaks.",
+      severity: "low",
+      impact: "Unauthenticated API access might lead to data leaks if the endpoint is sensitive.",
       effort: "1 hour"
     });
   }

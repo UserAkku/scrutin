@@ -52,31 +52,48 @@ model Session {
 }
 
 model Audit {
-  id                 String   @id @default(cuid())
+  id                 String    @id @default(cuid())
   userId             String?
   url                String
   hostname           String
   faviconUrl         String?
-  screenshotUrl      String?
-  isPublic           Boolean  @default(false)
-  isGuest            Boolean  @default(false)
-  status             String   @default("pending")
-  overallScore       Int      @default(0)
-  performanceScore   Int      @default(0)
-  seoScore           Int      @default(0)
-  securityScore      Int      @default(0)
-  uxScore            Int      @default(0)
-  accessibilityScore Int      @default(0)
-  technicalScore     Int      @default(0)
+  screenshotUrl      String?   // desktop screenshot URL/base64 key
+  mobileScreenshotUrl String?  // mobile screenshot
+  isPublic           Boolean   @default(false)
+  isGuest            Boolean   @default(false)
+  
+  // Job queue fields
+  status             String    @default("pending") // pending | running | complete | error
+  progress           Int       @default(0)         // 0-100 percent
+  jobStartedAt       DateTime?
+  jobCompletedAt     DateTime?
+  currentStep        String?                        // which analyzer is running
+  
+  // Scores
+  overallScore       Int       @default(0)
+  performanceScore   Int       @default(0)
+  seoScore           Int       @default(0)
+  securityScore      Int       @default(0)
+  uxScore            Int       @default(0)
+  accessibilityScore Int       @default(0)
+  technicalScore     Int       @default(0)
+  
+  // Rich data blobs per category
   performanceData    Json?
   seoData            Json?
   securityData       Json?
   uxData             Json?
   accessibilityData  Json?
   technicalData      Json?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  user               User?    @relation(fields: [userId], references: [id])
+  
+  // Metadata
+  targetTitle        String?   // page title of audited URL
+  targetDescription  String?   // meta description
+  techStack          Json?     // detected technology stack
+  
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User?     @relation(fields: [userId], references: [id])
   issues             Issue[]
 }
 
@@ -84,13 +101,18 @@ model Issue {
   id            String  @id @default(cuid())
   auditId       String
   category      String
-  severity      String
+  severity      String  // critical | medium | low
   title         String
-  description   String
-  fixSuggestion String
-  impact        String?
+  description   String  @db.Text
+  fixSuggestion String  @db.Text
+  impact        String? @db.Text
   effort        String?
+  learnMoreUrl  String? // link to docs/reference for this issue
   audit         Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  
+  @@index([auditId])
+  @@index([category])
+  @@index([severity])
 }
 
 model VerificationToken {

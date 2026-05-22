@@ -11,12 +11,12 @@ const SECRET_PATTERNS: SecretPattern[] = [
   { name: "Google API Key",        regex: /AIza[0-9A-Za-z\-_]{35}/g,                              severity: "critical" },
   { name: "AWS Access Key",        regex: /AKIA[0-9A-Z]{16}/g,                                    severity: "critical" },
   { name: "Stripe Secret Key",     regex: /sk_live_[0-9a-zA-Z]{24,}/g,                            severity: "critical" },
-  { name: "Stripe Publishable Key",regex: /pk_live_[0-9a-zA-Z]{24,}/g,                            severity: "medium"  },
+  { name: "Stripe Publishable Key",regex: /pk_live_[0-9a-zA-Z]{24,}/g,                            severity: "low"  },
   { name: "GitHub Token",          regex: /gh[pousr]_[A-Za-z0-9]{36,}/g,                          severity: "critical" },
-  { name: "JWT Token",             regex: /eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_+/=]*/g, severity: "critical" },
+  { name: "JWT Token",             regex: /eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_+/=]*/g, severity: "medium" },
   { name: "Private Key Block",     regex: /-----BEGIN (?:RSA|EC|DSA|OPENSSH) PRIVATE KEY-----/g,   severity: "critical" },
-  { name: "Firebase Config",       regex: /apiKey:\s*["'][A-Za-z0-9\-_]{35,}["']/g,               severity: "critical" },
-  { name: "Supabase Key",          regex: /eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_\-]+/g, severity: "critical" },
+  { name: "Firebase Config Key",   regex: /apiKey:\s*["'][A-Za-z0-9\-_]{35,}["']/g,               severity: "low" },
+  { name: "Supabase Anon Key",     regex: /eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_\-]+/g, severity: "low" },
   { name: "Slack Token",           regex: /xox[baprs]-[A-Za-z0-9\-]{10,}/g,                       severity: "critical" },
   { name: "Discord Token",         regex: /[MNO][A-Za-z0-9]{23}\.[A-Za-z0-9\-_]{6}\.[A-Za-z0-9\-_]{27}/g, severity: "critical" },
   { name: "Twilio Token",          regex: /SK[0-9a-fA-F]{32}/g,                                   severity: "critical" },
@@ -27,7 +27,7 @@ const SECRET_PATTERNS: SecretPattern[] = [
   { name: "Bearer Token",          regex: /['"]?[Bb]earer\s+[A-Za-z0-9\-_.~+/]+=*/g,             severity: "medium"  },
 ];
 
-const COMMENT_KEYWORDS = /(?:password|secret|key|token|api|internal|todo|fixme|hack|credentials|debug)/i;
+const COMMENT_KEYWORDS = /(?:password|secret|credentials|internal)/i;
 
 /** Collect JS file URLs from the HTML root */
 function extractJsUrls(root: ReturnType<typeof import("node-html-parser").parse>, baseUrl: string): string[] {
@@ -88,9 +88,9 @@ export async function runSecretsModule(
         issues.push({
           title: `${pattern.name} exposed in ${source.label}`,
           description: `Found ${matches.length} instance(s) of ${pattern.name}: ${redactSecret(matches[0])}`,
-          fixSuggestion: "Move this to server-side environment variables. Never expose secrets in client-side code.",
+          fixSuggestion: pattern.severity === "low" ? "Verify that this key is intentionally public and has strict domain/API restrictions." : "Move this to server-side environment variables. Never expose secrets in client-side code.",
           severity: pattern.severity,
-          impact: `Exposed ${pattern.name} can be exploited by attackers who inspect client-side code.`,
+          impact: pattern.severity === "low" ? "Public keys are expected in client-side bundles, but should be restricted." : `Exposed ${pattern.name} can be exploited by attackers who inspect client-side code.`,
           effort: "15 minutes"
         });
       }

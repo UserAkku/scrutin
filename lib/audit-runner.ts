@@ -1,7 +1,6 @@
 import type { Audit, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { publishAuditEvent } from "@/lib/stream";
-import type { AuditCategory, CategoryResult, ProgressEvent } from "@/types/audit";
+import type { AuditCategory, CategoryResult } from "@/types/audit";
 import { calculateOverallScore } from "@/lib/scoring";
 import { analyzePerformance } from "@/lib/analyzers/performance";
 import { analyzeSeo } from "@/lib/analyzers/seo";
@@ -16,7 +15,17 @@ const analyzers: Record<AuditCategory, (url: string) => Promise<CategoryResult>>
   security: analyzeSecurity,
   ux: analyzeUx,
   accessibility: analyzeAccessibility,
-  technical: analyzeTechnical
+  technical: analyzeTechnical,
+};
+
+// Category weights for progress calculation (must sum to 100)
+const CATEGORY_PROGRESS_WEIGHTS: Record<AuditCategory, number> = {
+  performance: 20,
+  seo: 20,
+  security: 25,
+  accessibility: 15,
+  ux: 10,
+  technical: 10,
 };
 
 function normalizeSeverity(raw: string | undefined | null): string {
@@ -31,70 +40,70 @@ function normalizeSeverity(raw: string | undefined | null): string {
 function mapResultToUpdate(result: CategoryResult): Prisma.AuditUpdateInput {
   const issuePayload = result.issues.map((issue) => {
     const categoryName = (issue.category || result.category).toUpperCase();
-    const fallbackTitle = `${categoryName} Issue: Automated Check Failed`;
-    const fallbackDescription = `The automated audit detected an irregularity in the ${categoryName} category. Please review manually.`;
-    
     return {
       category: issue.category || result.category,
       severity: normalizeSeverity(issue.severity),
-      title: issue.title || fallbackTitle,
-      description: issue.description || fallbackDescription,
-      fixSuggestion: issue.fixSuggestion || "Investigate the element related to this check and apply standard best practices.",
+      title: issue.title || `${categoryName} Issue Detected`,
+      description: issue.description || `An automated issue was found in the ${categoryName} category.`,
+      fixSuggestion: issue.fixSuggestion || "Review and apply standard best practices for this area.",
       impact: issue.impact ?? null,
-      effort: issue.effort ?? null
+      effort: issue.effort ?? null,
     };
   });
 
-  return {
+  const update: Record<string, unknown> = {
     [`${result.category}Score`]: result.score,
     [`${result.category}Data`]: result.data as Prisma.InputJsonValue,
-    issues: {
-      create: issuePayload
-    }
-  } as Prisma.AuditUpdateInput;
-}
-
-function resultEvent(result: CategoryResult): ProgressEvent {
-  return {
-    category: result.category,
-    status: "complete",
-    score: result.score,
-    message: result.summary
+    issues: { create: issuePayload },
   };
-}
 
-function errorUpdate(
-  category: AuditCategory,
-  message: string
-): Prisma.AuditUpdateInput {
-  const title = `${category.toUpperCase()} analysis unavailable`;
-  return {
-    [`${category}Data`]: {
-      error: message
-    } as Prisma.InputJsonValue,
-    issues: {
-      create: {
-        category,
-        severity: "medium",
-        title,
-        description: `Scrutin could not complete the ${category} audit for this run.`,
-        fixSuggestion:
-          "Re-run the audit after confirming the target URL is reachable and the required API key or external service is available.",
-        impact: message,
-        effort: "5 minutes"
-      }
+  // Capture screenshots if UX analysis ran
+  if (result.category === "ux") {
+    const data = result.data as Record<string, unknown>;
+    if (data?.desktopScreenshotBase64) {
+      update.screenshotUrl = `data:image/png;base64,${data.desktopScreenshotBase64}`;
     }
-  } as Prisma.AuditUpdateInput;
+    if (data?.mobileScreenshotBase64) {
+      update.mobileScreenshotUrl = `data:image/png;base64,${data.mobileScreenshotBase64}`;
+    }
+  }
+
+  // Capture tech stack from technical analysis
+  if (result.category === "technical") {
+    const data = result.data as Record<string, unknown>;
+    if (data?.techStack) {
+      update.techStack = data.techStack as Prisma.InputJsonValue;
+    }
+  }
+
+  // Capture page title/description from SEO
+  if (result.category === "seo") {
+    const data = result.data as Record<string, unknown>;
+    if (data?.title) update.targetTitle = data.title as string;
+    if (data?.metaDescription) update.targetDescription = data.metaDescription as string;
+  }
+
+  return update as Prisma.AuditUpdateInput;
 }
 
-export async function runAuditPipeline(audit: Audit) {
+async function updateProgress(auditId: string, completedCategories: Set<AuditCategory>) {
+  let progress = 0;
+  for (const cat of completedCategories) {
+    progress += CATEGORY_PROGRESS_WEIGHTS[cat] ?? 0;
+  }
+  await prisma.audit.update({
+    where: { id: auditId },
+    data: { progress: Math.min(progress, 95) }, // max 95% until fully complete
+  });
+}
+
+export async function runAuditPipeline(audit: Audit): Promise<void> {
+  // Reset issues and mark as running
   await prisma.issue.deleteMany({ where: { auditId: audit.id } });
   await prisma.audit.update({
     where: { id: audit.id },
-    data: { status: "running" }
+    data: { status: "running", progress: 0, jobStartedAt: new Date() },
   });
-
-  publishAuditEvent(audit.id, { status: "running", message: "Audit started" });
 
   const categories = audit.isGuest
     ? (["performance", "seo", "technical"] as AuditCategory[])
@@ -106,47 +115,70 @@ export async function runAuditPipeline(audit: Audit) {
     security: 0,
     ux: 0,
     accessibility: 0,
-    technical: 0
+    technical: 0,
   };
 
+  const completedCategories = new Set<AuditCategory>();
+
+  // Run all analyzers in parallel
   await Promise.allSettled(
     categories.map(async (category) => {
-      publishAuditEvent(audit.id, { category, status: "running" });
+      // Mark this category as running
+      await prisma.audit.update({
+        where: { id: audit.id },
+        data: { currentStep: category },
+      }).catch(() => {}); // non-critical
+
       try {
         const result = await analyzers[category](audit.url);
         scoreAccumulator[category] = result.score;
+
         await prisma.audit.update({
           where: { id: audit.id },
-          data: mapResultToUpdate(result)
+          data: mapResultToUpdate(result),
         });
-        publishAuditEvent(audit.id, resultEvent(result));
+
+        completedCategories.add(category);
+        await updateProgress(audit.id, completedCategories);
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Analysis unavailable";
+        const message = error instanceof Error ? error.message : "Analysis unavailable";
+        const title = `${category.charAt(0).toUpperCase() + category.slice(1)} analysis unavailable`;
+
         await prisma.audit.update({
           where: { id: audit.id },
-          data: errorUpdate(category, message)
+          data: {
+            [`${category}Data`]: { error: message } as Prisma.InputJsonValue,
+            issues: {
+              create: {
+                category,
+                severity: "medium",
+                title,
+                description: `Scrutin could not complete the ${category} audit: ${message}`,
+                fixSuggestion: "Re-run the audit after confirming the target URL is reachable.",
+                impact: message,
+                effort: "5 minutes",
+              },
+            },
+          },
         });
-        publishAuditEvent(audit.id, {
-          category,
-          status: "error",
-          message
-        });
+
+        completedCategories.add(category);
+        await updateProgress(audit.id, completedCategories);
       }
     })
   );
 
+  // Calculate overall score
   const overallScore = calculateOverallScore(scoreAccumulator, categories);
+
   await prisma.audit.update({
     where: { id: audit.id },
     data: {
       status: "complete",
-      overallScore
-    }
-  });
-
-  publishAuditEvent(audit.id, {
-    status: "complete",
-    overallScore
+      overallScore,
+      progress: 100,
+      currentStep: null,
+      jobCompletedAt: new Date(),
+    },
   });
 }

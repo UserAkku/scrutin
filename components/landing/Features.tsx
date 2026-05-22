@@ -23,17 +23,33 @@ export function Features() {
       <div className="mb-10 flex items-end justify-between gap-6">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-foreground/55">What we check</p>
-          <h2 className="mt-3 font-display text-2xl uppercase leading-tight sm:text-3xl md:text-4xl">Six Systems. One Report.</h2>
+          <h2 className="mt-3 font-display text-4xl uppercase leading-tight sm:text-5xl md:text-6xl text-brutal-black">Six Systems. One Report.</h2>
         </div>
       </div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => (
-          <Card key={item.title} className="min-h-60 p-6">
-            <item.icon className="h-6 w-6" />
-            <h3 className="mt-8 font-display text-xl uppercase sm:text-2xl">{item.title}</h3>
-            <p className="mt-4 text-sm leading-7 text-foreground/70">{item.description}</p>
-          </Card>
-        ))}
+        {items.map((item, index) => {
+          const colors = [
+            "bg-[var(--pastel-blue)]",
+            "bg-[var(--pastel-pink)]",
+            "bg-[var(--pastel-green)]",
+            "bg-[var(--pastel-yellow)]",
+            "bg-[var(--pastel-pink)]",
+            "bg-[var(--pastel-blue)]"
+          ];
+          const cardColor = colors[index % colors.length];
+          return (
+            <Card key={item.title} className={`min-h-60 p-8 relative ${cardColor}`}>
+              <div className="absolute -top-4 -right-4 w-10 h-10 rounded-full border-2 border-brutal-black bg-white flex items-center justify-center font-display text-lg z-10">
+                0{index + 1}
+              </div>
+              <div className="w-12 h-12 rounded-full border-2 border-brutal-black bg-white flex items-center justify-center mb-6">
+                <item.icon className="h-6 w-6" />
+              </div>
+              <h3 className="mt-2 font-display text-xl uppercase sm:text-2xl">{item.title}</h3>
+              <p className="mt-4 text-sm leading-7 font-body text-text-secondary font-medium">{item.description}</p>
+            </Card>
+          );
+        })}
       </div>
     </section>
   );

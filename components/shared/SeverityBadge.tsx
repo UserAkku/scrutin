@@ -8,9 +8,9 @@ export function SeverityBadge({
       ? severity
       : "low";
   const styles = {
-    critical: "bg-danger text-background border-danger",
-    medium: "bg-warning text-foreground border-warning",
-    low: "bg-background text-foreground border-foreground"
+    critical: "bg-red-500 text-white border-[3px] border-brutal-black",
+    medium: "bg-yellow-400 text-brutal-black border-[3px] border-brutal-black",
+    low: "bg-white text-brutal-black border-[3px] border-brutal-black"
   };
 
   return (

@@ -11,7 +11,9 @@ export interface HtmlSnapshot {
   screenshotBase64?: string;
 }
 
-export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot> {
+const snapshotCache = new Map<string, Promise<HtmlSnapshot>>();
+
+async function fetchHtmlSnapshotInternal(targetUrl: string): Promise<HtmlSnapshot> {
   const normalized = normalizeUrl(targetUrl).toString();
   const startedAt = Date.now();
 
@@ -119,6 +121,18 @@ export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot
   };
 }
 
+export async function fetchHtmlSnapshot(targetUrl: string): Promise<HtmlSnapshot> {
+  const normalized = normalizeUrl(targetUrl).toString();
+  if (snapshotCache.has(normalized)) {
+    return snapshotCache.get(normalized)!;
+  }
+  const promise = fetchHtmlSnapshotInternal(targetUrl);
+  snapshotCache.set(normalized, promise);
+  // Clear cache after 2 minutes
+  setTimeout(() => snapshotCache.delete(normalized), 120000);
+  return promise;
+}
+
 export function textContent(html: string) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -130,26 +144,8 @@ export function textContent(html: string) {
 
 export function extractTopKeywords(content: string) {
   const stopWords = new Set([
-    "the",
-    "and",
-    "for",
-    "that",
-    "with",
-    "this",
-    "from",
-    "your",
-    "have",
-    "you",
-    "are",
-    "our",
-    "but",
-    "not",
-    "all",
-    "was",
-    "can",
-    "has",
-    "will",
-    "its"
+    "the", "and", "for", "that", "with", "this", "from", "your", "have", "you",
+    "are", "our", "but", "not", "all", "was", "can", "has", "will", "its"
   ]);
 
   const words = content
@@ -174,9 +170,7 @@ export function extractTopKeywords(content: string) {
 }
 
 export function scoreListCompletion(results: boolean[]) {
-  if (results.length === 0) {
-    return 0;
-  }
+  if (results.length === 0) return 0;
   return Math.round((results.filter(Boolean).length / results.length) * 100);
 }
 

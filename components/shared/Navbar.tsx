@@ -1,34 +1,34 @@
-import Link from "next/link";
-import { auth, signOut } from "@/lib/auth";
-import { Button } from "@/components/shared/button";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
+"use client";
 
-export async function Navbar() {
-  const session = await auth();
+import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
+import { Button } from "@/components/shared/button";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+export function Navbar() {
+  const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-8">
-        <Link href="/" className="font-display text-sm uppercase tracking-[0.22em]">
+    <header className="sticky top-0 z-50 border-b-[3px] border-brutal-black bg-[var(--lime)] py-2">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 md:px-8">
+        <Link href="/" className="font-display text-2xl sm:text-4xl uppercase tracking-widest text-brutal-black">
           Scrutin
         </Link>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+        
+        {/* Desktop Nav */}
+        <div className="hidden sm:flex items-center gap-4">
           {session?.user ? (
             <>
-              <Link href="/dashboard" className="hidden sm:inline-block">
+              <Link href="/dashboard">
                 <Button variant="ghost" size="sm">Dashboard</Button>
               </Link>
-              <form action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}>
-                <Button size="sm" variant="secondary">Logout</Button>
-              </form>
+              <Button size="sm" variant="secondary" onClick={() => signOut({ callbackUrl: "/" })}>Logout</Button>
             </>
           ) : (
             <>
-              <Link href="/login" className="hidden sm:inline-block">
+              <Link href="/login">
                 <Button variant="ghost" size="sm">Sign In</Button>
               </Link>
               <Link href="/signup">
@@ -37,7 +37,35 @@ export async function Navbar() {
             </>
           )}
         </div>
+
+        {/* Mobile Hamburger */}
+        <button className="sm:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+        </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isOpen && (
+        <div className="absolute top-full left-0 w-full bg-[var(--lime)] border-b-[3px] border-brutal-black p-4 flex flex-col gap-4 sm:hidden">
+          {session?.user ? (
+            <>
+              <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+              </Link>
+              <Button variant="secondary" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>Logout</Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+              </Link>
+              <Link href="/signup" onClick={() => setIsOpen(false)}>
+                <Button className="w-full justify-start">Get Started</Button>
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </header>
   );
 }
