@@ -94,22 +94,22 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
     <div className="min-h-screen bg-[var(--bg)] pb-24">
       {/* Sticky Header */}
       <div className="sticky top-0 z-50 bg-white border-b-brutal border-brutal-black">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 py-3 min-h-16 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:flex-1 min-w-0">
             {audit.faviconUrl && (
-              <img src={audit.faviconUrl} alt="Favicon" className="w-8 h-8 rounded-none bg-transparent" />
+              <img src={audit.faviconUrl} alt="Favicon" className="w-6 h-6 sm:w-8 sm:h-8 rounded-none bg-transparent flex-shrink-0" />
             )}
-            <h1 className="font-display text-2xl uppercase tracking-wider truncate max-w-[200px] sm:max-w-[400px] text-brutal-black">
+            <h1 className="font-display text-xl sm:text-2xl uppercase tracking-wider truncate text-brutal-black flex-1 min-w-0 overflow-hidden">
               {audit.hostname}
             </h1>
-            <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-2 ml-auto sm:ml-4 flex-shrink-0">
               <button 
                 onClick={handleReaudit}
                 disabled={isReauditing}
                 className="p-1.5 sm:p-2 bg-white rounded-lg border-[2px] border-brutal-black hover:bg-[var(--pastel-blue)] transition-colors disabled:opacity-50"
                 title="Run New Audit"
               >
-                <RefreshCw className={`w-5 h-5 text-brutal-black ${isReauditing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 text-brutal-black ${isReauditing ? 'animate-spin' : ''}`} />
               </button>
               {isOwner && (
                 <button 
@@ -118,12 +118,12 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
                   className="p-1.5 sm:p-2 bg-white rounded-lg border-[2px] border-brutal-black hover:bg-[#FF8080] transition-colors disabled:opacity-50"
                   title="Delete Audit"
                 >
-                  <Trash2 className="w-5 h-5 text-brutal-black" />
+                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-brutal-black" />
                 </button>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="w-full sm:w-auto">
             <PDFExport
               audit={{
                 url: audit.url,
@@ -135,37 +135,37 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 space-y-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-8 mt-8 sm:mt-12 space-y-8 sm:space-y-12">
         {/* Hero Score Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
-          <div className="brutal-card p-8 bg-[var(--pastel-blue)] relative min-h-[300px] flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6 sm:gap-8">
+          <div className="brutal-card p-6 sm:p-8 bg-[var(--pastel-blue)] relative min-h-[250px] sm:min-h-[300px] flex flex-col justify-center">
             <div className="brutal-badge -top-4 -right-4 bg-white text-xl w-12 h-12">★</div>
-            <p className="font-body text-xl font-bold text-brutal-black mb-4">Overall Structural Score</p>
-            <h2 className="text-[8rem] leading-none font-display text-brutal-black">{audit.overallScore}%</h2>
+            <p className="font-body text-lg sm:text-xl font-bold text-brutal-black mb-4">Overall Structural Score</p>
+            <h2 className="text-[5rem] sm:text-[8rem] leading-none font-display text-brutal-black">{audit.overallScore}%</h2>
             <p className="font-body font-bold text-brutal-black/70 mt-4">Based on {audit.issues.length} total issues found.</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {TABS.map((tab, i) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`brutal-card p-6 relative flex flex-col items-start transition-transform hover:-translate-y-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-brutal-black ${
-                  activeTab === tab.id ? "-translate-y-2" : ""
+                className={`brutal-card p-4 sm:p-6 relative flex flex-col items-start transition-all hover:-translate-y-2 focus:outline-none outline-none ${
+                  activeTab === tab.id ? "-translate-y-1" : ""
                 }`}
                 style={{ backgroundColor: tab.color }}
               >
-                <div className="brutal-badge -top-3 -right-3 bg-white w-8 h-8 text-sm">0{i + 1}</div>
-                <div className="flex w-full items-center justify-between mb-4">
-                  <span className="font-body font-bold text-sm uppercase tracking-wider text-brutal-black">
+                <div className="brutal-badge -top-3 -right-3 bg-white w-6 h-6 sm:w-8 sm:h-8 text-xs sm:text-sm">0{i + 1}</div>
+                <div className="flex w-full items-center justify-between mb-2 sm:mb-4">
+                  <span className="font-body font-bold text-xs sm:text-sm uppercase tracking-wider text-brutal-black break-all sm:break-normal text-left">
                     {tab.label}
                   </span>
                   {tab.isLocked && (
-                    <span className="text-xs px-2 py-0.5 border-2 border-brutal-black bg-white font-bold uppercase rounded-full">Pro</span>
+                    <span className="text-[10px] sm:text-xs px-1.5 py-0.5 border-2 border-brutal-black bg-white font-bold uppercase rounded-full">Pro</span>
                   )}
                 </div>
-                <h3 className="text-6xl font-display text-brutal-black">{tab.score}</h3>
-                <p className="mt-4 font-sans font-bold text-xs text-brutal-black/70 uppercase tracking-widest">
+                <h3 className="text-4xl sm:text-6xl font-display text-brutal-black">{tab.score}</h3>
+                <p className="mt-2 sm:mt-4 font-sans font-bold text-[10px] sm:text-xs text-brutal-black/70 uppercase tracking-widest text-left">
                   {categoryIssues[tab.id].length} issues
                 </p>
               </button>

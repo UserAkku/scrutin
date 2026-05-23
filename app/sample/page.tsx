@@ -111,34 +111,34 @@ export default function SamplePage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-8 sm:mt-12 space-y-8 sm:space-y-12">
         {/* Hero Score Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
-          <div className="brutal-card p-8 bg-[var(--pastel-blue)] relative min-h-[300px] flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6 sm:gap-8">
+          <div className="brutal-card p-6 sm:p-8 bg-[var(--pastel-blue)] relative min-h-[250px] sm:min-h-[300px] flex flex-col justify-center">
             <div className="brutal-badge -top-4 -right-4 bg-white text-xl w-12 h-12">★</div>
-            <p className="font-body text-xl font-bold text-brutal-black mb-4">Overall Structural Score</p>
-            <h2 className="text-[8rem] leading-none font-display text-brutal-black">{overallScore}%</h2>
+            <p className="font-body text-lg sm:text-xl font-bold text-brutal-black mb-4">Overall Structural Score</p>
+            <h2 className="text-[5rem] sm:text-[8rem] leading-none font-display text-brutal-black">{overallScore}%</h2>
             <p className="font-body font-bold text-brutal-black/70 mt-4">Based on {totalIssues} total issues found.</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {TABS.map((tab, i) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`brutal-card p-6 relative flex flex-col items-start transition-transform hover:-translate-y-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-brutal-black ${
-                  activeTab === tab.id ? "-translate-y-2" : ""
+                className={`brutal-card p-4 sm:p-6 relative flex flex-col items-start transition-all hover:-translate-y-2 focus:outline-none outline-none ${
+                  activeTab === tab.id ? "-translate-y-1" : ""
                 }`}
                 style={{ backgroundColor: tab.color }}
               >
-                <div className="brutal-badge -top-3 -right-3 bg-white w-8 h-8 text-sm">0{i + 1}</div>
-                <div className="flex w-full items-center justify-between mb-4">
-                  <span className="font-body font-bold text-sm uppercase tracking-wider text-brutal-black">
+                <div className="brutal-badge -top-3 -right-3 bg-white w-6 h-6 sm:w-8 sm:h-8 text-xs sm:text-sm">0{i + 1}</div>
+                <div className="flex w-full items-center justify-between mb-2 sm:mb-4">
+                  <span className="font-body font-bold text-xs sm:text-sm uppercase tracking-wider text-brutal-black break-all sm:break-normal text-left">
                     {tab.label}
                   </span>
                 </div>
-                <h3 className="text-6xl font-display text-brutal-black">{tab.score}</h3>
-                <p className="mt-4 font-sans font-bold text-xs text-brutal-black/70 uppercase tracking-widest">
+                <h3 className="text-4xl sm:text-6xl font-display text-brutal-black">{tab.score}</h3>
+                <p className="mt-2 sm:mt-4 font-sans font-bold text-[10px] sm:text-xs text-brutal-black/70 uppercase tracking-widest text-left">
                   {dummyIssues[tab.id]?.length || 0} issues
                 </p>
               </button>

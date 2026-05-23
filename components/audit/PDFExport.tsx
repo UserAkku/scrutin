@@ -15,55 +15,83 @@ const styles = StyleSheet.create({
     padding: 40, 
     fontSize: 10, 
     fontFamily: "Helvetica", 
-    backgroundColor: "#ffffff", 
-    color: "#1c1919" 
+    backgroundColor: "#E7F664", 
+    color: "#2D2323" 
+  },
+  headerLogo: {
+    fontSize: 32,
+    fontFamily: "Helvetica-Bold",
+    textTransform: "uppercase",
+    letterSpacing: 4,
+    marginBottom: 40,
+    borderBottomWidth: 4,
+    borderBottomColor: "#2D2323",
+    borderBottomStyle: "solid",
+    paddingBottom: 10,
+    color: "#2D2323"
   },
   cover: { 
     flex: 1, 
     justifyContent: "center", 
     alignItems: "center" 
   },
+  coverCard: {
+    backgroundColor: "#C4F0FF",
+    borderWidth: 4,
+    borderColor: "#2D2323",
+    borderStyle: "solid",
+    padding: 40,
+    alignItems: "center",
+    width: "100%",
+  },
   coverTitle: { 
-    fontSize: 40, 
+    fontSize: 24, 
     fontFamily: "Helvetica-Bold", 
     textTransform: "uppercase", 
-    marginBottom: 8,
-    color: "#1c1919"
+    marginBottom: 16,
+    color: "#2D2323"
   },
   coverUrl: { 
-    fontSize: 14, 
-    color: "#1c1919", 
+    fontSize: 16, 
+    color: "#2D2323", 
     fontFamily: "Helvetica-Bold",
     marginBottom: 40,
-    padding: 8,
-    border: "2px solid #1c1919",
-    backgroundColor: "#FFD1DC"
+    backgroundColor: "#FFFFFF",
+    borderWidth: 2,
+    borderColor: "#2D2323",
+    borderStyle: "solid",
+    padding: "8px 16px",
+    textTransform: "uppercase",
   },
-  scoreCircle: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    border: "4px solid #1c1919",
-    backgroundColor: "#F2E33A",
+  scoreBox: {
+    width: 200,
+    height: 140,
+    borderWidth: 4,
+    borderColor: "#2D2323",
+    borderStyle: "solid",
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 40
+    marginBottom: 20
   },
   scoreNumber: {
-    fontSize: 56,
+    fontSize: 80,
     fontFamily: "Helvetica-Bold",
-    color: "#1c1919"
+    color: "#2D2323",
+    marginTop: 10
   },
   scoreLabel: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Helvetica-Bold",
     textTransform: "uppercase",
     letterSpacing: 2,
-    color: "#1c1919",
+    color: "#2D2323",
     marginTop: 4
   },
   pageHeader: {
-    borderBottom: "4px solid #1c1919",
+    borderBottomWidth: 4,
+    borderBottomColor: "#2D2323",
+    borderBottomStyle: "solid",
     paddingBottom: 16,
     marginBottom: 24,
     flexDirection: "row",
@@ -71,21 +99,28 @@ const styles = StyleSheet.create({
     alignItems: "flex-end"
   },
   pageTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontFamily: "Helvetica-Bold",
     textTransform: "uppercase",
-    color: "#1c1919"
+    color: "#2D2323"
   },
   pageSubtitle: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Helvetica-Bold",
-    color: "#1c1919"
+    color: "#2D2323",
+    backgroundColor: "#FFF9A6",
+    padding: "4px 8px",
+    borderWidth: 2,
+    borderColor: "#2D2323",
+    borderStyle: "solid",
   },
   issueCard: { 
-    backgroundColor: "#ffffff", 
-    padding: 16, 
-    marginBottom: 16, 
-    border: "3px solid #1c1919"
+    backgroundColor: "#FFFFFF", 
+    padding: 20, 
+    marginBottom: 20, 
+    borderWidth: 3,
+    borderColor: "#2D2323",
+    borderStyle: "solid"
   },
   issueHeader: { 
     flexDirection: "row", 
@@ -93,32 +128,38 @@ const styles = StyleSheet.create({
     marginBottom: 12 
   },
   chip: { 
-    fontSize: 9, 
-    padding: "4px 8px", 
-    marginRight: 8, 
+    fontSize: 10, 
+    padding: "4px 10px", 
+    marginRight: 12, 
     fontFamily: "Helvetica-Bold", 
-    color: "#1c1919", 
+    color: "#2D2323", 
     textTransform: "uppercase",
-    border: "2px solid #1c1919"
+    borderWidth: 2,
+    borderColor: "#2D2323",
+    borderStyle: "solid",
   },
-  chipCritical: { backgroundColor: "#fca5a5" },
-  chipMedium: { backgroundColor: "#fcd34d" },
-  chipLow: { backgroundColor: "#93c5fd" },
-  issueTitle: { fontSize: 14, fontFamily: "Helvetica-Bold", flex: 1, color: "#1c1919" },
+  chipCritical: { backgroundColor: "#FF4444", color: "#FFFFFF" },
+  chipMedium: { backgroundColor: "#FFF9A6" },
+  chipLow: { backgroundColor: "#B7FF8B" },
+  issueTitle: { fontSize: 16, fontFamily: "Helvetica-Bold", flex: 1, color: "#2D2323", textTransform: "uppercase" },
   categoryLabel: {
     fontSize: 10,
-    color: "#1c1919",
+    color: "#2D2323",
     textTransform: "uppercase",
     fontFamily: "Helvetica-Bold",
-    backgroundColor: "#A7C7E7",
+    backgroundColor: "#FFCBEB",
     padding: "4px 8px",
     alignSelf: "flex-start",
-    border: "2px solid #1c1919",
-    marginBottom: 8
+    borderWidth: 2,
+    borderColor: "#2D2323",
+    borderStyle: "solid",
+    marginBottom: 12
   },
-  fixLabel: { fontSize: 10, fontFamily: "Helvetica-Bold", color: "#1c1919", marginTop: 8, marginBottom: 4, textTransform: "uppercase" },
-  fixSuggestion: { fontSize: 11, color: "#333", lineHeight: 1.5, fontFamily: "Helvetica-Bold" }
+  fixLabel: { fontSize: 12, fontFamily: "Helvetica-Bold", color: "#2D2323", marginTop: 12, marginBottom: 6, textTransform: "uppercase" },
+  fixSuggestion: { fontSize: 12, color: "#4A3C3C", lineHeight: 1.5, fontFamily: "Helvetica" }
 });
+
+const cardColors = ["#C4F0FF", "#FFCBEB", "#B7FF8B", "#FFF9A6"];
 
 function ReportPdf({
   audit
@@ -129,16 +170,21 @@ function ReportPdf({
     <Document>
       {/* Cover Page */}
       <Page size="A4" style={styles.page}>
+        <Text style={styles.headerLogo}>SCRUTIN</Text>
         <View style={styles.cover}>
-          <Text style={styles.coverTitle}>Structural Audit</Text>
-          <Text style={styles.coverUrl}>{audit.url}</Text>
-          <View style={styles.scoreCircle}>
-            <Text style={styles.scoreNumber}>{audit.overallScore}</Text>
-            <Text style={styles.scoreLabel}>Overall Score</Text>
+          <View style={styles.coverCard}>
+            <Text style={styles.coverTitle}>Website Audit Report</Text>
+            <Text style={[styles.coverUrl, { backgroundColor: "#FFCBEB" }]}>{audit.url}</Text>
+            
+            <View style={[styles.scoreBox, { backgroundColor: "#FFF9A6" }]}>
+              <Text style={styles.scoreNumber}>{audit.overallScore}</Text>
+            </View>
+            <Text style={styles.scoreLabel}>Overall Structural Score</Text>
+            
+            <Text style={{ fontSize: 12, color: "#2D2323", fontFamily: "Helvetica-Bold", textAlign: "center", maxWidth: 350, lineHeight: 1.5, marginTop: 40, borderTopWidth: 2, borderTopColor: "#2D2323", borderTopStyle: "solid", paddingTop: 20 }}>
+              This professional audit includes deep analysis of performance, SEO, security, accessibility, UX/UI, and technical architecture.
+            </Text>
           </View>
-          <Text style={{ fontSize: 12, color: "#a0a0b0", textAlign: "center", maxWidth: 300, lineHeight: 1.5 }}>
-            This god-level audit includes deep analysis of performance, SEO, security, accessibility, UX/UI, and technical architecture.
-          </Text>
         </View>
       </Page>
 
@@ -146,11 +192,13 @@ function ReportPdf({
       <Page size="A4" style={styles.page}>
         <View style={styles.pageHeader}>
           <Text style={styles.pageTitle}>Actionable Remediations</Text>
-          <Text style={styles.pageSubtitle}>{audit.issues.length} issues found</Text>
+          <Text style={styles.pageSubtitle}>{audit.issues.length} ISSUES</Text>
         </View>
 
         {audit.issues.length === 0 ? (
-          <Text style={{ color: "#a0a0b0" }}>No major issues detected.</Text>
+          <View style={[styles.issueCard, { backgroundColor: "#B7FF8B" }]}>
+            <Text style={{ color: "#2D2323", fontFamily: "Helvetica-Bold", fontSize: 16 }}>No major issues detected.</Text>
+          </View>
         ) : (
           audit.issues.slice(0, 30).map((issue, index) => {
             const severityStyle =
@@ -159,11 +207,13 @@ function ReportPdf({
                 : issue.severity === "medium"
                 ? styles.chipMedium
                 : styles.chipLow;
+                
+            const cardBgColor = cardColors[index % cardColors.length];
 
             return (
-              <View key={`${issue.title}-${index}`} style={styles.issueCard} wrap={false}>
+              <View key={`${issue.title}-${index}`} style={[styles.issueCard, { backgroundColor: cardBgColor }]} wrap={false}>
                 {issue.category && (
-                  <Text style={styles.categoryLabel}>{issue.category}</Text>
+                  <Text style={[styles.categoryLabel, { backgroundColor: "#FFFFFF" }]}>{issue.category}</Text>
                 )}
                 <View style={styles.issueHeader}>
                   <Text style={[styles.chip, severityStyle]}>{issue.severity}</Text>
@@ -191,7 +241,7 @@ export function PDFExport({
       fileName={`${new URL(audit.url).hostname}-audit-report.pdf`}
     >
       {({ loading }) => (
-        <Button variant="secondary" className="gap-2">
+        <div className="px-4 py-1.5 sm:px-6 sm:py-2 bg-white text-brutal-black font-display text-sm sm:text-base uppercase tracking-wider rounded-lg border-[2px] border-brutal-black hover:bg-[var(--pastel-blue)] transition-colors flex items-center justify-center gap-2 h-full w-full">
           {loading ? (
             <>
               <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -207,7 +257,7 @@ export function PDFExport({
               Download PDF
             </>
           )}
-        </Button>
+        </div>
       )}
     </PDFDownloadLink>
   );

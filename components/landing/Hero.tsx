@@ -8,22 +8,22 @@ function NeoBrutalistCard() {
         <p className="font-body text-xl text-brutal-black font-bold mb-4 pr-12">
           Overall Structural Score
         </p>
-        <h2 className="text-8xl lg:text-[9rem] leading-none text-brutal-black tracking-tighter">
+        <h2 className="text-6xl sm:text-8xl lg:text-[9rem] leading-none text-brutal-black tracking-tighter">
           98%
         </h2>
       </div>
 
       <div className="grid grid-cols-2 gap-6 mb-8">
-        <div className="bg-[var(--pastel-pink)] brutal-card p-6 relative hover:-translate-y-1 transition-transform">
+        <div className="bg-[var(--pastel-pink)] brutal-card p-4 sm:p-6 relative hover:-translate-y-1 transition-transform">
           <div className="brutal-badge -top-4 -right-4 bg-white text-sm">✓</div>
-          <p className="font-body text-lg font-bold text-brutal-black mb-2 uppercase">Performance</p>
-          <h2 className="text-5xl lg:text-6xl text-brutal-black tracking-tighter font-display">92</h2>
+          <p className="font-body text-sm sm:text-lg font-bold text-brutal-black mb-2 uppercase">Performance</p>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl text-brutal-black tracking-tighter font-display">92</h2>
         </div>
         
-        <div className="bg-[var(--pastel-green)] brutal-card p-6 relative hover:-translate-y-1 transition-transform">
+        <div className="bg-[var(--pastel-green)] brutal-card p-4 sm:p-6 relative hover:-translate-y-1 transition-transform">
           <div className="brutal-badge -top-4 -right-4 bg-white text-sm">✓</div>
-          <p className="font-body text-lg font-bold text-brutal-black mb-2 uppercase">SEO Score</p>
-          <h2 className="text-5xl lg:text-6xl text-brutal-black tracking-tighter font-display">96</h2>
+          <p className="font-body text-sm sm:text-lg font-bold text-brutal-black mb-2 uppercase">SEO Score</p>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl text-brutal-black tracking-tighter font-display">96</h2>
         </div>
       </div>
 
@@ -42,10 +42,9 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden bg-[var(--bg)]">
       <div className="mx-auto flex flex-col justify-center max-w-7xl px-4 py-12 md:px-8 md:py-20 lg:min-h-[85vh]">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-12">
-          
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border-[3px] border-brutal-black bg-white px-4 py-1.5 font-display text-sm tracking-wider uppercase mb-8">
+        <div className="grid items-center gap-12 md:grid-cols-2 md:gap-12">
+          <div className="max-w-2xl mx-auto md:mx-0 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border-[3px] border-brutal-black bg-white px-4 py-1.5 font-display text-xs sm:text-sm tracking-wider uppercase mb-8">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -54,19 +53,20 @@ export function Hero() {
             </div>
             
             <div className="space-y-6 mb-10">
-              <h1 className="text-5xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] text-brutal-black font-display uppercase tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[5.5rem] leading-[0.95] text-brutal-black font-display uppercase tracking-tight">
                 Destroy Your Website's <br className="hidden sm:block" />
                 Hidden Bugs.
               </h1>
             </div>
             
-            <AuditInputForm />
+            <div className="flex justify-center md:justify-start w-full">
+              <AuditInputForm />
+            </div>
           </div>
 
-          <div className="hidden md:block">
+          <div className="mt-8 md:mt-0 max-w-[520px] mx-auto md:max-w-none md:ml-auto md:mr-0 w-full">
             <NeoBrutalistCard />
           </div>
-          
         </div>
       </div>
     </section>

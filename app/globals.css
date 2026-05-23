@@ -28,13 +28,17 @@
 }
 
 @layer base {
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
   body {
     background-color: var(--bg);
     color: var(--text-primary);
     font-family: var(--font-playfair);
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: "lnum" 1, "tnum" 1;
-    overflow-x: hidden;
   }
   
   /* Hide scrollbar for all elements globally */

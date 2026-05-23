@@ -89,28 +89,28 @@ function AuditCard({ audit, index }: { audit: AuditRow & { revision?: number }; 
           {index + 1 < 10 ? `0${index + 1}` : index + 1}
         </div>
         
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-4 flex-wrap mb-2 pr-20">
-            <h3 className="text-2xl font-display uppercase truncate text-brutal-black">
+        <div className="flex-1 min-w-0 w-full overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap mb-2 w-full">
+            <h3 className="text-xl sm:text-2xl font-display uppercase truncate text-brutal-black max-w-full">
               {audit.hostname}
             </h3>
             {audit.status === "complete" ? (
-              <span className="bg-white border-2 border-brutal-black px-3 py-1 text-xs font-bold uppercase rounded-full">Done</span>
+              <span className="bg-white border-2 border-brutal-black px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-bold uppercase rounded-full">Done</span>
             ) : audit.status === "error" ? (
-              <span className="bg-[#FF4444] text-white border-2 border-brutal-black px-3 py-1 text-xs font-bold uppercase rounded-full">Failed</span>
+              <span className="bg-[#FF4444] text-white border-2 border-brutal-black px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-bold uppercase rounded-full">Failed</span>
             ) : (
-              <span className="bg-yellow-300 border-2 border-brutal-black px-3 py-1 text-xs font-bold uppercase rounded-full animate-pulse">Running {audit.progress}%</span>
+              <span className="bg-yellow-300 border-2 border-brutal-black px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-bold uppercase rounded-full animate-pulse">Running {audit.progress}%</span>
             )}
 
           </div>
-          <p className="font-body text-brutal-black/80 font-bold text-sm mb-4 truncate">
+          <p className="font-body text-brutal-black/80 font-bold text-xs sm:text-sm mb-4 truncate w-full">
             {audit.targetTitle || audit.url}
           </p>
-          <div className="flex items-center gap-4 text-xs font-bold uppercase font-body text-brutal-black/80">
-            <span className="border-2 border-brutal-black/30 rounded px-2 py-1 bg-white/50">{date}</span>
-            {audit.issueCount > 0 && <span className="border-2 border-red-500/50 rounded px-2 py-1 bg-red-100 text-red-900">⚠️ {audit.issueCount} Issues</span>}
+          <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-bold uppercase font-body text-brutal-black/80 flex-wrap">
+            <span className="border-2 border-brutal-black/30 rounded px-1.5 py-0.5 sm:px-2 sm:py-1 bg-white/50">{date}</span>
+            {audit.issueCount > 0 && <span className="border-2 border-red-500/50 rounded px-1.5 py-0.5 sm:px-2 sm:py-1 bg-red-100 text-red-900">⚠️ {audit.issueCount} Issues</span>}
             {(audit.revision ?? 0) > 0 && (
-              <span className="bg-[var(--pastel-blue)] border-2 border-brutal-black px-2 py-1 rounded text-brutal-black">
+              <span className="bg-[var(--pastel-blue)] border-2 border-brutal-black px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-brutal-black">
                 {audit.revision === 1 ? "Revised" : `Revised ${audit.revision}`}
               </span>
             )}
@@ -118,9 +118,9 @@ function AuditCard({ audit, index }: { audit: AuditRow & { revision?: number }; 
         </div>
 
         {audit.status === "complete" && (
-          <div className="flex flex-col items-center justify-center bg-white border-[3px] border-brutal-black rounded-xl p-4 min-w-[120px] mt-4 sm:mt-0">
-            <span className="text-sm font-bold uppercase font-body text-brutal-black mb-1">Score</span>
-            <span className="text-5xl font-display text-brutal-black">{audit.overallScore}</span>
+          <div className="flex flex-col items-center justify-center bg-white border-[3px] border-brutal-black rounded-xl p-4 min-w-[100px] sm:min-w-[120px] mt-4 sm:mt-0 w-full sm:w-auto">
+            <span className="text-xs sm:text-sm font-bold uppercase font-body text-brutal-black mb-1">Score</span>
+            <span className="text-4xl sm:text-5xl font-display text-brutal-black">{audit.overallScore}</span>
           </div>
         )}
       </div>
@@ -172,36 +172,36 @@ export function DashboardClient({ user, audits, stats }: Props) {
   const initials = user.name ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) : user.email[0].toUpperCase();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
+    <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 sm:py-12 md:py-20">
       
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-16">
-        <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full border-[3px] border-brutal-black bg-[var(--pastel-yellow)] flex items-center justify-center text-4xl font-display text-brutal-black">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10 sm:mb-16">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-[3px] border-brutal-black bg-[var(--pastel-yellow)] flex items-center justify-center text-3xl sm:text-4xl font-display text-brutal-black flex-shrink-0">
             {initials}
           </div>
-          <div>
-            <h1 className="text-5xl font-display uppercase tracking-tight text-brutal-black">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl sm:text-5xl font-display uppercase tracking-tight text-brutal-black truncate max-w-full">
               {user.name ?? "Dashboard"}
             </h1>
-            <p className="font-body font-bold text-lg text-brutal-black/70 mt-1">{user.email}</p>
+            <p className="font-body font-bold text-sm sm:text-lg text-brutal-black/70 mt-1 truncate">{user.email}</p>
           </div>
         </div>
-        <Link href="/">
-          <Button size="lg" className="text-xl flex items-center gap-2">NEW AUDIT <Plus className="w-5 h-5 stroke-[3]" /></Button>
+        <Link href="/" className="w-full sm:w-auto flex-shrink-0">
+          <Button size="lg" className="w-full sm:w-auto text-lg sm:text-xl flex items-center justify-center gap-2">NEW AUDIT <Plus className="w-5 h-5 stroke-[3]" /></Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10 sm:mb-16">
         {[
           { label: "Total Audits", value: stats.total, color: "var(--pastel-blue)" },
           { label: "Avg Score", value: stats.avgScore, color: "var(--pastel-pink)" },
           { label: "Issues", value: stats.totalIssues, color: "var(--pastel-green)" },
           { label: "Daily Limit", value: `${user.auditsToday}/10`, color: "var(--pastel-yellow)" },
         ].map((stat, i) => (
-          <div key={stat.label} className="brutal-card p-6 bg-white relative" style={{ backgroundColor: stat.color }}>
-            <div className="brutal-badge -top-3 -right-3 text-xs bg-white">0{i+1}</div>
-            <div className="text-5xl md:text-6xl font-display text-brutal-black mb-2">{stat.value}</div>
-            <div className="font-body font-bold text-sm uppercase tracking-widest text-brutal-black/80">{stat.label}</div>
+          <div key={stat.label} className="brutal-card p-4 sm:p-6 bg-white relative" style={{ backgroundColor: stat.color }}>
+            <div className="brutal-badge -top-3 -right-3 text-[10px] sm:text-xs bg-white w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border-2 border-brutal-black font-sans">0{i+1}</div>
+            <div className="text-4xl sm:text-5xl md:text-6xl font-display text-brutal-black mb-1 sm:mb-2 truncate">{stat.value}</div>
+            <div className="font-body font-bold text-[10px] sm:text-sm uppercase tracking-widest text-brutal-black/80 truncate">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -237,7 +237,7 @@ export function DashboardClient({ user, audits, stats }: Props) {
           <Link href="/"><Button>START YOUR FIRST AUDIT</Button></Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {filtered.map((audit, i) => <AuditCard key={audit.id} audit={audit} index={i} />)}
         </div>
       )}
