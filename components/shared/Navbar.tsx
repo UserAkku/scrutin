@@ -22,9 +22,9 @@ export function Navbar() {
           {session?.user ? (
             <>
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm">Dashboard</Button>
+                <Button variant="default" size="sm">Dashboard</Button>
               </Link>
-              <Button size="sm" variant="secondary" onClick={() => signOut({ callbackUrl: "/" })}>Logout</Button>
+              <Button size="sm" variant="danger" onClick={() => signOut({ callbackUrl: "/" })}>Logout</Button>
             </>
           ) : (
             <>
@@ -50,9 +50,9 @@ export function Navbar() {
           {session?.user ? (
             <>
               <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+                <Button variant="default" className="w-full justify-start">Dashboard</Button>
               </Link>
-              <Button variant="secondary" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>Logout</Button>
+              <Button variant="danger" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>Logout</Button>
             </>
           ) : (
             <>

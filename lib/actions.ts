@@ -23,3 +23,34 @@ export async function loginAction(formData: FormData) {
 export async function googleLoginAction() {
   await signIn("google", { redirectTo: "/dashboard" });
 }
+
+import { prisma } from "@/lib/prisma";
+import { auth as getAuth } from "@/lib/auth"; // Avoid collision with existing signIn
+import { revalidatePath } from "next/cache";
+
+export async function deleteAuditAction(auditId: string) {
+  const session = await getAuth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const audit = await prisma.audit.findUnique({
+    where: { id: auditId },
+    select: { userId: true },
+  });
+
+  if (!audit) {
+    throw new Error("Audit not found");
+  }
+
+  if (audit.userId !== userId) {
+    throw new Error("Forbidden");
+  }
+
+  await prisma.audit.delete({
+    where: { id: auditId },
+  });
+
+  revalidatePath("/dashboard");
+}

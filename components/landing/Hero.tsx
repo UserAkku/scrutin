@@ -30,7 +30,7 @@ function NeoBrutalistCard() {
       <div className="flex items-center gap-4 mt-2">
         <h3 className="text-3xl text-brutal-black whitespace-nowrap">Recent Audits</h3>
         <div className="flex-1 h-[4px] bg-brutal-black"></div>
-        <div className="w-14 h-14 flex-shrink-0 bg-brutal-black rounded-full shadow-brutal flex items-center justify-center text-4xl text-white font-body cursor-pointer hover:-translate-y-1 hover:shadow-brutal-lg transition-transform">
+        <div className="w-14 h-14 flex-shrink-0 bg-brutal-black rounded-full flex items-center justify-center text-4xl text-white font-body cursor-pointer hover:-translate-y-1 transition-transform">
           +
         </div>
       </div>
@@ -45,7 +45,7 @@ export function Hero() {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-12">
           
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border-[3px] border-brutal-black bg-white px-4 py-1.5 font-display text-sm tracking-wider uppercase mb-8 shadow-[2px_2px_0px_0px_#2D2323]">
+            <div className="inline-flex items-center gap-2 rounded-full border-[3px] border-brutal-black bg-white px-4 py-1.5 font-display text-sm tracking-wider uppercase mb-8">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>

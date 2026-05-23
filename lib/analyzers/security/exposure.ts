@@ -80,7 +80,7 @@ export async function runExposureModule(origin: string): Promise<SecurityModuleR
 
     for (const result of results) {
       if (result.status !== "fulfilled") continue;
-      const { entry, status } = result.value;
+      const { entry, status, res } = result.value;
 
       if (status === 200) {
         const contentType = res?.headers.get("content-type") || "";

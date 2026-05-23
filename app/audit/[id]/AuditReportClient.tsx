@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { Trash2, RefreshCw } from "lucide-react";
+import { deleteAuditAction } from "@/lib/actions";
 import { getQuickWins } from "@/lib/audit-access";
 import { IssueList } from "@/components/audit/IssueList";
 import { CoreWebVitals } from "@/components/audit/CoreWebVitals";
@@ -20,9 +23,43 @@ const PDFExport = dynamic(
 type CategoryTab = "performance" | "seo" | "security" | "accessibility" | "ux" | "technical";
 
 export function AuditReportClient({ audit, currentUserId }: { audit: any; currentUserId?: string }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<CategoryTab>("performance");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isReauditing, setIsReauditing] = useState(false);
   const isOwner = currentUserId === audit.userId;
   const locked = audit.isGuest;
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this audit?")) return;
+    setIsDeleting(true);
+    try {
+      await deleteAuditAction(audit.id);
+      router.push("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete audit");
+      setIsDeleting(false);
+    }
+  };
+
+  const handleReaudit = async () => {
+    setIsReauditing(true);
+    try {
+      const res = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: audit.url }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to start audit");
+      router.push(`/audit/${data.auditId}`);
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "Failed to re-audit");
+      setIsReauditing(false);
+    }
+  };
 
   const categoryIssues = useMemo(() => ({
     performance: audit.issues.filter((i: any) => i.category === "performance"),
@@ -44,30 +81,46 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
 
   const quickWins = getQuickWins(audit.issues).slice(0, 4);
 
-  const TABS: { id: CategoryTab; label: string; isLocked: boolean; score: number; color: string }[] = [
-    { id: "performance", label: "Performance", isLocked: false, score: scores.performance, color: "var(--pastel-blue)" },
-    { id: "seo", label: "SEO", isLocked: false, score: scores.seo, color: "var(--pastel-pink)" },
-    { id: "security", label: "Security", isLocked: locked, score: scores.security, color: "var(--pastel-green)" },
-    { id: "accessibility", label: "A11y", isLocked: locked, score: scores.accessibility, color: "var(--pastel-yellow)" },
-    { id: "ux", label: "UX / UI", isLocked: locked, score: scores.ux, color: "white" },
-    { id: "technical", label: "Technical", isLocked: false, score: scores.technical, color: "var(--pastel-blue)" },
+  const TABS: { id: CategoryTab; label: string; isLocked: boolean; score: number | string; color: string }[] = [
+    { id: "performance", label: "Performance", isLocked: false, score: audit.performanceData?.error ? "N/A" : scores.performance, color: "var(--pastel-blue)" },
+    { id: "seo", label: "SEO", isLocked: false, score: audit.seoData?.error ? "N/A" : scores.seo, color: "var(--pastel-pink)" },
+    { id: "security", label: "Security", isLocked: locked, score: audit.securityData?.error ? "N/A" : scores.security, color: "var(--pastel-green)" },
+    { id: "accessibility", label: "A11y", isLocked: locked, score: audit.accessibilityData?.error ? "N/A" : scores.accessibility, color: "var(--pastel-yellow)" },
+    { id: "ux", label: "UX / UI", isLocked: locked, score: audit.uxData?.error ? "N/A" : scores.ux, color: "white" },
+    { id: "technical", label: "Technical", isLocked: false, score: audit.technicalData?.error ? "N/A" : scores.technical, color: "var(--pastel-blue)" },
   ];
 
   return (
     <div className="min-h-screen bg-[var(--bg)] pb-24">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 bg-white border-b-brutal border-brutal-black shadow-brutal">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="sticky top-0 z-50 bg-white border-b-brutal border-brutal-black">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {audit.faviconUrl && (
-              <img src={audit.faviconUrl} alt="Favicon" className="w-8 h-8 rounded-none border-[2px] border-brutal-black bg-white" />
+              <img src={audit.faviconUrl} alt="Favicon" className="w-8 h-8 rounded-none bg-transparent" />
             )}
             <h1 className="font-display text-2xl uppercase tracking-wider truncate max-w-[200px] sm:max-w-[400px] text-brutal-black">
               {audit.hostname}
             </h1>
-            <div className="hidden sm:flex items-center gap-2 px-4 py-1 border-[2px] border-brutal-black bg-[var(--pastel-yellow)] shadow-[2px_2px_0px_0px_#2D2323]">
-              <span className="font-body font-bold text-xs uppercase">Overall Score</span>
-              <span className="font-display text-xl">{audit.overallScore}%</span>
+            <div className="flex items-center gap-2 ml-4">
+              <button 
+                onClick={handleReaudit}
+                disabled={isReauditing}
+                className="p-1.5 sm:p-2 bg-white rounded-lg border-[2px] border-brutal-black hover:bg-[var(--pastel-blue)] transition-colors disabled:opacity-50"
+                title="Run New Audit"
+              >
+                <RefreshCw className={`w-5 h-5 text-brutal-black ${isReauditing ? 'animate-spin' : ''}`} />
+              </button>
+              {isOwner && (
+                <button 
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="p-1.5 sm:p-2 bg-white rounded-lg border-[2px] border-brutal-black hover:bg-[#FF8080] transition-colors disabled:opacity-50"
+                  title="Delete Audit"
+                >
+                  <Trash2 className="w-5 h-5 text-brutal-black" />
+                </button>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -82,7 +135,7 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 mt-12 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 space-y-12">
         {/* Hero Score Section */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
           <div className="brutal-card p-8 bg-[var(--pastel-blue)] relative min-h-[300px] flex flex-col justify-center">
@@ -97,8 +150,8 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`brutal-card p-6 relative flex flex-col items-start transition-transform hover:-translate-y-2 hover:shadow-brutal-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-brutal-black ${
-                  activeTab === tab.id ? "-translate-y-2 shadow-brutal-lg ring-4 ring-brutal-black ring-inset" : ""
+                className={`brutal-card p-6 relative flex flex-col items-start transition-transform hover:-translate-y-2 focus:outline-none focus-visible:ring-4 focus-visible:ring-brutal-black ${
+                  activeTab === tab.id ? "-translate-y-2" : ""
                 }`}
                 style={{ backgroundColor: tab.color }}
               >
@@ -112,7 +165,7 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
                   )}
                 </div>
                 <h3 className="text-6xl font-display text-brutal-black">{tab.score}</h3>
-                <p className="mt-4 font-body font-bold text-xs text-brutal-black/70 uppercase">
+                <p className="mt-4 font-sans font-bold text-xs text-brutal-black/70 uppercase tracking-widest">
                   {categoryIssues[tab.id].length} issues
                 </p>
               </button>
@@ -129,7 +182,7 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {quickWins.map((issue, i) => (
-                <div key={i} className="bg-white brutal-card p-6 hover:-translate-y-1 hover:shadow-brutal-lg transition-transform">
+                <div key={i} className="bg-white brutal-card p-6 hover:-translate-y-1 transition-transform">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-xs px-2 py-1 border-2 border-brutal-black font-bold uppercase tracking-wider bg-[var(--pastel-yellow)]">
                       {issue.category}
@@ -150,15 +203,17 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
         <div id="details" className="brutal-card p-8 bg-white min-h-[500px] relative">
           
           {/* Scope Info Banner */}
-          <div className="bg-[#facc15] border-[3px] border-brutal-black p-4 mb-8 flex items-start gap-4 shadow-[4px_4px_0px_0px_#2D2323]">
-            <span className="text-2xl mt-1">ℹ️</span>
-            <div>
-              <h4 className="font-display uppercase text-brutal-black text-xl mb-1">Audit Scope Information</h4>
-              <p className="font-body text-brutal-black font-bold text-sm">
-                Security and Technical audits are performed on the root domain (<span className="underline">{audit.hostname}</span>), while Performance, SEO, and UX/UI checks analyze the exact URL provided (<span className="underline">{audit.url}</span>).
-              </p>
+          {audit.url.replace(/^https?:\/\//, '').replace(/\/$/, '') !== audit.hostname && (
+            <div className="bg-[#facc15] border-[3px] border-brutal-black p-4 mb-8 flex items-start gap-4">
+              <span className="text-2xl mt-1">ℹ️</span>
+              <div>
+                <h4 className="font-display uppercase text-brutal-black text-xl mb-1">Audit Scope Information</h4>
+                <p className="font-body text-brutal-black font-bold text-sm break-words">
+                  Security and Technical audits are performed on the root domain (<span className="underline break-all">{audit.hostname}</span>), while Performance, SEO, and UX/UI checks analyze the exact URL provided (<span className="underline break-all">{audit.url}</span>).
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Tabs Navigation */}
           <div className="flex flex-wrap gap-4 mb-10 pb-6 border-b-[3px] border-brutal-black">
@@ -168,8 +223,8 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-2 border-[3px] border-brutal-black rounded-full font-display uppercase tracking-widest text-lg transition-transform ${
                   activeTab === tab.id
-                    ? "bg-brutal-black text-white -translate-y-1 shadow-[4px_4px_0px_0px_#C4F0FF]"
-                    : "bg-white text-brutal-black hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#2D2323]"
+                    ? "bg-brutal-black text-white -translate-y-1"
+                    : "bg-white text-brutal-black hover:-translate-y-1"
                 }`}
               >
                 {tab.label}

@@ -32,7 +32,19 @@
     background-color: var(--bg);
     color: var(--text-primary);
     font-family: var(--font-playfair);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
     overflow-x: hidden;
+  }
+  
+  /* Hide scrollbar for all elements globally */
+  * {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -83,7 +95,7 @@
   }
 
   .brutal-badge {
-    @apply absolute w-8 h-8 rounded-full border-2 border-brutal-black bg-brutal-white flex items-center justify-center font-display text-sm z-10;
+    @apply absolute w-8 h-8 rounded-full border-2 border-brutal-black bg-brutal-white flex items-center justify-center font-sans text-sm z-10;
   }
 }
 

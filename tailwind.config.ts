@@ -30,7 +30,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-anton)"],
         body: ["var(--font-playfair)"],
-        sans: ["var(--font-playfair)"],
+        sans: ["var(--font-inter)", "sans-serif"],
       },
       boxShadow: {
         brutal: "4px 4px 0px 0px var(--brutal-black)",

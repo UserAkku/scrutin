@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { ChevronDown, Plus } from "lucide-react";
 import { Button } from "@/components/shared/button";
 
 type AuditRow = {
@@ -35,14 +36,53 @@ type Props = {
 
 const PASTEL_COLORS = ["var(--pastel-blue)", "var(--pastel-pink)", "var(--pastel-green)", "var(--pastel-yellow)"];
 
-function AuditCard({ audit, index }: { audit: AuditRow; index: number }) {
+function CustomSelect({ 
+  value, 
+  onChange, 
+  options 
+}: { 
+  value: string; 
+  onChange: (val: string) => void; 
+  options: { label: string; value: string }[] 
+}) {
+  const [open, setOpen] = useState(false);
+  const selectedOption = options.find(o => o.value === value) || options[0];
+
+  return (
+    <div className="relative">
+      <button 
+        onClick={() => setOpen(!open)}
+        onBlur={() => setTimeout(() => setOpen(false), 200)}
+        className="brutal-input text-lg font-bold uppercase cursor-pointer bg-white flex items-center justify-between min-w-[180px] w-full text-left"
+      >
+        <span>{selectedOption.label}</span>
+        <ChevronDown className="w-5 h-5 ml-2 text-brutal-black" />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 mt-2 w-full bg-white border-[3px] border-brutal-black rounded-xl z-50 overflow-hidden flex flex-col">
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+              className={`w-full text-left px-4 py-3 font-bold uppercase text-brutal-black hover:bg-[var(--pastel-yellow)] transition-colors border-b-2 border-brutal-black/10 last:border-0 ${value === opt.value ? 'bg-[var(--pastel-yellow)]' : ''}`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AuditCard({ audit, index }: { audit: AuditRow & { revision?: number }; index: number }) {
   const date = new Date(audit.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   const bg = PASTEL_COLORS[index % PASTEL_COLORS.length];
   
   return (
-    <Link href={`/audit/${audit.id}`} className="block">
+    <Link href={`/audit/${audit.id}`} className="block relative group">
       <div 
-        className="brutal-card p-6 relative flex flex-col sm:flex-row gap-6 items-start sm:items-center hover:-translate-y-2 hover:shadow-brutal-lg transition-all duration-300"
+        className={`brutal-card p-6 relative flex flex-col sm:flex-row gap-6 items-start sm:items-center hover:-translate-y-2 transition-all duration-300`}
         style={{ backgroundColor: bg }}
       >
         <div className="brutal-badge -top-4 -left-4 text-xl w-10 h-10 font-bold bg-white">
@@ -50,27 +90,35 @@ function AuditCard({ audit, index }: { audit: AuditRow; index: number }) {
         </div>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-4 flex-wrap mb-2">
+          <div className="flex items-center gap-4 flex-wrap mb-2 pr-20">
             <h3 className="text-2xl font-display uppercase truncate text-brutal-black">
               {audit.hostname}
             </h3>
             {audit.status === "complete" ? (
               <span className="bg-white border-2 border-brutal-black px-3 py-1 text-xs font-bold uppercase rounded-full">Done</span>
+            ) : audit.status === "error" ? (
+              <span className="bg-[#FF4444] text-white border-2 border-brutal-black px-3 py-1 text-xs font-bold uppercase rounded-full">Failed</span>
             ) : (
               <span className="bg-yellow-300 border-2 border-brutal-black px-3 py-1 text-xs font-bold uppercase rounded-full animate-pulse">Running {audit.progress}%</span>
             )}
+
           </div>
           <p className="font-body text-brutal-black/80 font-bold text-sm mb-4 truncate">
             {audit.targetTitle || audit.url}
           </p>
           <div className="flex items-center gap-4 text-xs font-bold uppercase font-body text-brutal-black/80">
             <span className="border-2 border-brutal-black/30 rounded px-2 py-1 bg-white/50">{date}</span>
-            {audit.issueCount > 0 && <span className="border-2 border-red-500/50 rounded px-2 py-1 bg-red-100">⚠️ {audit.issueCount} Issues</span>}
+            {audit.issueCount > 0 && <span className="border-2 border-red-500/50 rounded px-2 py-1 bg-red-100 text-red-900">⚠️ {audit.issueCount} Issues</span>}
+            {(audit.revision ?? 0) > 0 && (
+              <span className="bg-[var(--pastel-blue)] border-2 border-brutal-black px-2 py-1 rounded text-brutal-black">
+                {audit.revision === 1 ? "Revised" : `Revised ${audit.revision}`}
+              </span>
+            )}
           </div>
         </div>
 
         {audit.status === "complete" && (
-          <div className="flex flex-col items-center justify-center bg-white border-[3px] border-brutal-black rounded-xl p-4 min-w-[120px] shadow-[4px_4px_0px_0px_#2D2323]">
+          <div className="flex flex-col items-center justify-center bg-white border-[3px] border-brutal-black rounded-xl p-4 min-w-[120px] mt-4 sm:mt-0">
             <span className="text-sm font-bold uppercase font-body text-brutal-black mb-1">Score</span>
             <span className="text-5xl font-display text-brutal-black">{audit.overallScore}</span>
           </div>
@@ -85,23 +133,50 @@ export function DashboardClient({ user, audits, stats }: Props) {
   const [filter, setFilter] = useState<"all" | "complete" | "running">("all");
   const [sortBy, setSortBy] = useState<"date" | "score">("date");
 
+  const auditsWithRevisions = useMemo(() => {
+    const urlGroups = new Map<string, AuditRow[]>();
+    const chronologicalAudits = [...audits].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    chronologicalAudits.forEach(audit => {
+      const group = urlGroups.get(audit.url) || [];
+      group.push(audit);
+      urlGroups.set(audit.url, group);
+    });
+    
+    return audits.map(audit => {
+      const group = urlGroups.get(audit.url) || [];
+      const revisionIndex = group.findIndex(a => a.id === audit.id);
+      return {
+        ...audit,
+        revision: revisionIndex > 0 ? revisionIndex : 0
+      };
+    });
+  }, [audits]);
+
   const filtered = useMemo(() => {
-    let list = audits;
-    if (search) list = list.filter((a) => a.hostname.toLowerCase().includes(search.toLowerCase()) || (a.targetTitle ?? "").toLowerCase().includes(search.toLowerCase()));
+    let list = auditsWithRevisions;
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter((a) => {
+        const matchHost = a.hostname.toLowerCase().startsWith(q);
+        const matchTitle = (a.targetTitle ?? "").toLowerCase().split(/\s+/).some(w => w.startsWith(q));
+        return matchHost || matchTitle;
+      });
+    }
     if (filter === "complete") list = list.filter((a) => a.status === "complete");
     if (filter === "running") list = list.filter((a) => a.status === "running" || a.status === "pending");
     if (sortBy === "score") list = [...list].sort((a, b) => b.overallScore - a.overallScore);
     return list;
-  }, [audits, search, filter, sortBy]);
+  }, [auditsWithRevisions, search, filter, sortBy]);
 
   const initials = user.name ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) : user.email[0].toUpperCase();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+    <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
       
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-16">
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full border-[3px] border-brutal-black bg-[var(--pastel-yellow)] shadow-brutal flex items-center justify-center text-4xl font-display text-brutal-black">
+          <div className="w-20 h-20 rounded-full border-[3px] border-brutal-black bg-[var(--pastel-yellow)] flex items-center justify-center text-4xl font-display text-brutal-black">
             {initials}
           </div>
           <div>
@@ -112,7 +187,7 @@ export function DashboardClient({ user, audits, stats }: Props) {
           </div>
         </div>
         <Link href="/">
-          <Button size="lg" className="text-xl">NEW AUDIT +</Button>
+          <Button size="lg" className="text-xl flex items-center gap-2">NEW AUDIT <Plus className="w-5 h-5 stroke-[3]" /></Button>
         </Link>
       </div>
 
@@ -137,23 +212,23 @@ export function DashboardClient({ user, audits, stats }: Props) {
           placeholder="SEARCH DOMAINS..."
           className="brutal-input flex-1 text-lg font-bold uppercase placeholder:normal-case placeholder:text-gray-500"
         />
-        <select 
+        <CustomSelect 
           value={filter} 
-          onChange={(e) => setFilter(e.target.value as any)} 
-          className="brutal-input text-lg font-bold cursor-pointer"
-        >
-          <option value="all">ALL STATUS</option>
-          <option value="complete">COMPLETED</option>
-          <option value="running">RUNNING</option>
-        </select>
-        <select 
+          onChange={(v) => setFilter(v as any)} 
+          options={[
+            { value: "all", label: "ALL STATUS" },
+            { value: "complete", label: "COMPLETED" },
+            { value: "running", label: "RUNNING" }
+          ]} 
+        />
+        <CustomSelect 
           value={sortBy} 
-          onChange={(e) => setSortBy(e.target.value as any)} 
-          className="brutal-input text-lg font-bold cursor-pointer bg-white"
-        >
-          <option value="date">NEWEST</option>
-          <option value="score">TOP SCORE</option>
-        </select>
+          onChange={(v) => setSortBy(v as any)} 
+          options={[
+            { value: "date", label: "NEWEST" },
+            { value: "score", label: "TOP SCORE" }
+          ]} 
+        />
       </div>
 
       {filtered.length === 0 ? (

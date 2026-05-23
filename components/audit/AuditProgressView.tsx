@@ -159,7 +159,7 @@ export function AuditProgressView({
   }, [auditId]);
 
   useEffect(() => {
-    if (status === "complete") return;
+    if (status === "complete" || status === "error") return;
     poll();                                      // immediate first poll
     const id = setInterval(poll, 3000);          // then every 3 s
     return () => clearInterval(id);
@@ -174,21 +174,32 @@ export function AuditProgressView({
       
       {/* ── Header ── */}
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full border-[3px] border-brutal-black bg-white text-brutal-black font-bold uppercase tracking-widest text-sm shadow-brutal">
+        <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full border-[3px] border-brutal-black bg-white text-brutal-black font-bold uppercase tracking-widest text-sm">
           <span className="w-3 h-3 rounded-full bg-yellow-400 border-2 border-brutal-black animate-pulse" />
           Audit in progress
         </div>
         <h1 className="text-5xl sm:text-7xl font-display text-brutal-black uppercase">
           Scanning <br/>
-          <span className="bg-white px-4 border-brutal border-brutal-black shadow-brutal inline-block mt-2">{hostname}</span>
+          <span className="bg-white px-4 border-brutal border-brutal-black inline-block mt-2">{hostname}</span>
         </h1>
         <p className="text-lg max-w-md mx-auto font-body font-bold text-brutal-black mt-6">
           You can safely close this tab. We're running the audit in the background and results will be ready soon.
         </p>
       </div>
 
-      {/* ── Browser mockup ── */}
-      <BrowserMockup hostname={hostname} progress={progress} />
+      {status === "error" ? (
+        <div className="w-full max-w-xl brutal-card p-8 bg-[#FFCBEB] text-center space-y-6">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-4xl font-display uppercase text-brutal-black">Audit Failed</h2>
+          <p className="text-lg font-body font-bold text-brutal-black/80">
+            The audit process was interrupted or encountered an error. This usually happens if the target URL is unreachable or the process was cancelled.
+          </p>
+          <a href="/" className="inline-flex bg-brutal-black text-white font-display border-2 border-brutal-black rounded-xl px-6 py-3 uppercase tracking-wider transition-transform hover:-translate-y-1">Start New Audit</a>
+        </div>
+      ) : (
+        <>
+          {/* ── Browser mockup ── */}
+          <BrowserMockup hostname={hostname} progress={progress} />
 
       {/* ── Progress numbers ── */}
       <div className="w-full max-w-xl space-y-4">
@@ -214,7 +225,7 @@ export function AuditProgressView({
         </div>
 
         {/* Master progress bar */}
-        <div className="h-6 w-full border-[3px] border-brutal-black rounded-full bg-white overflow-hidden shadow-brutal p-1">
+        <div className="h-6 w-full border-[3px] border-brutal-black rounded-full bg-white overflow-hidden p-1">
           <div
             className="h-full bg-brutal-black rounded-full"
             style={{ width: `${progress}%`, transition: "width 0.8s ease" }}
@@ -250,6 +261,8 @@ export function AuditProgressView({
           );
         })}
       </div>
+        </>
+      )}
 
     </div>
   );

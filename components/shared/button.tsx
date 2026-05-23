@@ -10,8 +10,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brutal-black text-brutal-white border-brutal border-brutal-black shadow-brutal hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-1 active:shadow-brutal-active",
-        secondary: "bg-brutal-white text-brutal-black border-brutal border-brutal-black shadow-brutal hover:-translate-y-1 hover:shadow-brutal-lg active:translate-y-1 active:shadow-brutal-active",
+        default: "bg-brutal-black text-brutal-white border-brutal border-brutal-black hover:-translate-y-1 active:translate-y-1",
+        secondary: "bg-brutal-white text-brutal-black border-brutal border-brutal-black hover:-translate-y-1 active:translate-y-1",
+        danger: "bg-[#FF4444] text-white border-brutal border-brutal-black hover:-translate-y-1 active:translate-y-1",
         ghost: "border-2 border-transparent bg-transparent hover:border-brutal-black text-brutal-black"
       },
       size: {
