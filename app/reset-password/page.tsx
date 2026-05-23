@@ -6,7 +6,7 @@ import { Button } from "@/components/shared/button";
 import { Card } from "@/components/shared/card";
 import { Input } from "@/components/shared/input";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const params = useSearchParams();
   const [email, setEmail] = useState(params.get("email") ?? "");
   const [token, setToken] = useState(params.get("token") ?? "");
@@ -53,5 +53,15 @@ export default function ResetPasswordPage() {
         {message ? <p className="mt-4 break-all text-sm text-foreground/70">{message}</p> : null}
       </Card>
     </div>
+  );
+}
+
+import { Suspense } from "react";
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-md px-4 py-16 text-center">Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
