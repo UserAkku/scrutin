@@ -61,22 +61,13 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
     }
   };
 
-  const [isEmailing, setIsEmailing] = useState(false);
-  const handleEmailReport = async () => {
-    setIsEmailing(true);
-    try {
-      const res = await fetch(`/api/audit/${audit.id}/email`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send email");
-      alert("Report emailed successfully!");
-    } catch (err) {
-      console.error(err);
-      alert(err instanceof Error ? err.message : "Failed to send email");
-    } finally {
-      setIsEmailing(false);
-    }
+  const [linkCopied, setLinkCopied] = useState(false);
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/audit/${audit.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2500);
+    });
   };
 
   const categoryIssues = useMemo(() => ({
@@ -145,11 +136,10 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
             {!locked ? (
               <>
                 <button
-                  onClick={handleEmailReport}
-                  disabled={isEmailing}
-                  className="px-4 py-1.5 sm:px-6 sm:py-2 bg-white text-brutal-black font-display text-sm sm:text-base uppercase tracking-wider rounded-lg border-[2px] border-brutal-black hover:bg-[var(--pastel-green)] transition-colors flex items-center justify-center gap-2 h-full w-full disabled:opacity-50"
+                  onClick={handleCopyLink}
+                  className="px-4 py-1.5 sm:px-6 sm:py-2 bg-white text-brutal-black font-display text-sm sm:text-base uppercase tracking-wider rounded-lg border-[2px] border-brutal-black hover:bg-[var(--pastel-green)] transition-colors flex items-center justify-center gap-2 h-full w-full"
                 >
-                  {isEmailing ? "Sending..." : "Email Report"}
+                  {linkCopied ? "✓ Link Copied!" : "🔗 Share Report"}
                 </button>
                 <PDFExport
                   audit={{

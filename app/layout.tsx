@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
   title: "Krillo | Website Audit Tool",
   description: "Mission-critical website audits with exact fixes.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 import { Providers } from "./providers";

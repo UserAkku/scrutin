@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Slight drop shadow (brutal offset) -->
+  <rect x="4" y="4" width="26" height="26" rx="3" fill="#2D2323"/>
+
+  <!-- Tilted tile body -->
+  <g transform="rotate(-4, 16, 16)">
+    <!-- Lime yellow background -->
+    <rect x="2" y="2" width="26" height="26" rx="3" fill="#E7F664"/>
+    <!-- Thick brutal border -->
+    <rect x="2" y="2" width="26" height="26" rx="3" fill="none" stroke="#2D2323" stroke-width="2.5"/>
+
+    <!-- Bold K -->
+    <text
+      x="15"
+      y="22"
+      text-anchor="middle"
+      font-family="Arial Black, Impact, Helvetica Neue, sans-serif"
+      font-weight="900"
+      font-size="20"
+      fill="#2D2323"
+      letter-spacing="-1"
+    >K</text>
+  </g>
+</svg>
