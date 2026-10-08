@@ -6,11 +6,6 @@ import { z } from "zod";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
-const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
-});
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -27,29 +22,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        code: { label: "Code", type: "text" }
       },
       async authorize(rawCredentials) {
-        const parsed = credentialsSchema.safeParse(rawCredentials);
-        if (!parsed.success) {
+        if (!rawCredentials?.email || !rawCredentials?.code) {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email }
+        const email = rawCredentials.email as string;
+        const code = rawCredentials.code as string;
+
+        // Verify OTP code
+        const otpRecord = await prisma.otpCode.findFirst({
+          where: {
+            email,
+            code,
+            used: false,
+            expiresAt: { gt: new Date() }
+          },
+          orderBy: { createdAt: 'desc' }
         });
 
-        if (!user?.password) {
-          return null;
+        if (!otpRecord) {
+          return null; // Invalid or expired OTP
         }
 
-        const isValid = await bcrypt.compare(
-          parsed.data.password,
-          user.password
-        );
+        // Mark OTP as used
+        await prisma.otpCode.update({
+          where: { id: otpRecord.id },
+          data: { used: true }
+        });
 
-        if (!isValid) {
-          return null;
+        // Find or create user
+        let user = await prisma.user.findUnique({
+          where: { email }
+        });
+
+        if (!user) {
+          user = await prisma.user.create({
+            data: {
+              email,
+              name: email.split('@')[0], // Default name
+              plan: "free"
+            }
+          });
         }
 
         return {
@@ -84,6 +100,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   }
 });
 
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 12);
-}

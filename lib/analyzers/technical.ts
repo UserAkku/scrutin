@@ -1,5 +1,5 @@
 /**
- * technical.ts – Scrutin upgraded technical analyzer
+ * technical.ts – Krillo upgraded technical analyzer
  *
  * Implements 38+ comprehensive checks spanning:
  *   - Infrastructure (HTTPS, HSTS, HTTP/2, redirect chains, CDN, server fingerprinting)
@@ -324,9 +324,9 @@ export async function analyzeTechnical(targetUrl: string): Promise<CategoryResul
   const manifestUrl  = `${origin}/manifest.json`;
   const swUrl        = `${origin}/sw.js`;
   // A randomly named path to detect custom 404 handling
-  const fake404Url   = `${origin}/__scrutin_no_such_page_${Date.now()}__`;
+  const fake404Url   = `${origin}/__krillo_no_such_page_${Date.now()}__`;
   // A path that sometimes triggers a 500 on poorly-configured servers
-  const fake500Url   = `${origin}/__scrutin_server_error_probe__`;
+  const fake500Url   = `${origin}/__krillo_server_error_probe__`;
 
   const headStartMs = Date.now();
   const [

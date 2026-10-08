@@ -170,7 +170,7 @@ function ReportPdf({
     <Document>
       {/* Cover Page */}
       <Page size="A4" style={styles.page}>
-        <Text style={styles.headerLogo}>SCRUTIN</Text>
+        <Text style={styles.headerLogo}>KRILLO</Text>
         <View style={styles.cover}>
           <View style={styles.coverCard}>
             <Text style={styles.coverTitle}>Website Audit Report</Text>

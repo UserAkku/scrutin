@@ -22,7 +22,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL ?? "http://localhost:3000"),
-  title: "Scrutin | Website Audit Tool",
+  title: "Krillo | Website Audit Tool",
   description: "Mission-critical website audits with exact fixes.",
 };
 

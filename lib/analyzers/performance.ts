@@ -1,7 +1,7 @@
 /**
  * performance.ts
  * ─────────────────────────────────────────────────────────────────────────────
- * Deep performance analyzer for Scrutin.
+ * Deep performance analyzer for Krillo.
  *
  * Strategy
  * ─────────

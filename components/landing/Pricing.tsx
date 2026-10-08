@@ -1,9 +1,38 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/shared/card";
 import { Button } from "@/components/shared/button";
 import { CheckIcon } from "@/components/shared/icons";
 
 export function Pricing() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleNotify = async () => {
+    setIsLoading(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/notify-pro", { method: "POST" });
+      const data = await res.json();
+      
+      if (data.requiresLogin) {
+        router.push("/login?redirect=/#pricing");
+        return;
+      }
+      
+      if (!res.ok) throw new Error(data.error);
+      
+      setMessage(data.message || "Added to waitlist!");
+    } catch (err: any) {
+      setMessage(err.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
       <div className="mb-10">
@@ -42,7 +71,22 @@ export function Pricing() {
               </div>
             ))}
           </div>
-          <Button variant="secondary" className="mt-8 w-full text-xl py-6 bg-white hover:bg-gray-100" type="button">Notify Me</Button>
+          
+          {message && (
+            <div className="mt-4 p-3 border-2 border-brutal-black bg-[var(--pastel-yellow)] text-sm font-bold text-center">
+              {message}
+            </div>
+          )}
+          
+          <Button 
+            variant="secondary" 
+            className="mt-8 w-full text-xl py-6 bg-white hover:bg-gray-100 disabled:opacity-50" 
+            type="button"
+            onClick={handleNotify}
+            disabled={isLoading}
+          >
+            {isLoading ? "Joining..." : "Notify Me"}
+          </Button>
         </div>
       </div>
     </section>

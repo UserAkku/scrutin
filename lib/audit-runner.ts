@@ -153,7 +153,7 @@ export async function runAuditPipeline(audit: Audit): Promise<void> {
                 category,
                 severity: "medium",
                 title,
-                description: `Scrutin could not complete the ${category} audit: ${message}`,
+                description: `Krillo could not complete the ${category} audit: ${message}`,
                 fixSuggestion: "Re-run the audit after confirming the target URL is reachable.",
                 impact: message,
                 effort: "5 minutes",

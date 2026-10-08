@@ -1,7 +1,7 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="630" fill="#F1EFEA"/>
   <rect x="70" y="70" width="1060" height="490" stroke="#090909" stroke-width="4"/>
-  <text x="100" y="180" fill="#090909" font-family="monospace" font-size="84" font-weight="700">SCRUTIN</text>
+  <text x="100" y="180" fill="#090909" font-family="monospace" font-size="84" font-weight="700">KRILLO</text>
   <text x="100" y="270" fill="#090909" font-family="monospace" font-size="28">Mission-critical website audits with exact fixes.</text>
   <rect x="100" y="330" width="250" height="140" fill="#090909"/>
   <text x="145" y="415" fill="#F1EFEA" font-family="monospace" font-size="54">86</text>

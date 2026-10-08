@@ -1,5 +1,5 @@
 /**
- * Accessibility Analyzer — Scrutin
+ * Accessibility Analyzer — Krillo
  *
  * Performs 40+ WCAG 2.1 AA accessibility checks using:
  *   1. axe-core injected via Puppeteer (live browser evaluation)

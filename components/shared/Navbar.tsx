@@ -13,8 +13,42 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b-[3px] border-brutal-black bg-[var(--lime)] py-2">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 md:px-8">
-        <Link href="/" className="font-display text-2xl sm:text-4xl uppercase tracking-widest text-brutal-black">
-          Scrutin
+        <Link href="/" className="group flex items-center gap-[3px] sm:gap-1">
+          {(["K","R","I","L","L","O"] as const).map((letter, i) => {
+            const colors = [
+              "var(--pastel-pink)",
+              "var(--pastel-blue)",
+              "#E7F664",
+              "var(--pastel-green)",
+              "var(--pastel-yellow)",
+              "white",
+            ];
+            const rotations = [
+              "-rotate-3",
+              "rotate-2",
+              "-rotate-1",
+              "rotate-3",
+              "-rotate-2",
+              "rotate-1",
+            ];
+            const hoverRotations = [
+              "group-hover:rotate-6",
+              "group-hover:-rotate-6",
+              "group-hover:rotate-6",
+              "group-hover:-rotate-6",
+              "group-hover:rotate-6",
+              "group-hover:-rotate-6",
+            ];
+            return (
+              <span
+                key={i}
+                className={`inline-flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 border-[2.5px] border-brutal-black font-display text-sm sm:text-lg md:text-xl font-black text-brutal-black select-none transition-all duration-200 ${rotations[i]} ${hoverRotations[i]} group-hover:-translate-y-1 group-hover:shadow-[2px_2px_0px_#2D2323]`}
+                style={{ backgroundColor: colors[i], transitionDelay: `${i * 30}ms` }}
+              >
+                {letter}
+              </span>
+            );
+          })}
         </Link>
         
         {/* Desktop Nav */}

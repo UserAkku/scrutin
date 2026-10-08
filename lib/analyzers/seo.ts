@@ -1,6 +1,6 @@
 /**
  * @file seo.ts
- * @description Comprehensive SEO analyzer for Scrutin — 50+ technical checks covering
+ * @description Comprehensive SEO analyzer for Krillo — 50+ technical checks covering
  *   title & meta, headings, content quality, links, images, structured data, social
  *   metadata, hreflang, SERP preview calculations, and a weighted penalty scoring model.
  *   AI (Gemini) is used only for summarization and surfacing additional insights from the
@@ -166,7 +166,7 @@ async function isLinkAlive(href: string): Promise<boolean> {
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; ScrutinBot/1.0; +https://scrutin.app)"
+          "Mozilla/5.0 (compatible; KrilloBot/1.0; +https://krillo.tech)"
       }
     });
     clearTimeout(timeout);
@@ -930,7 +930,7 @@ ${html.slice(0, 10000)}`,
     return Math.max(0, score);
   })();
 
-  // Blend with the shared density scorer for consistency across Scrutin categories
+  // Blend with the shared density scorer for consistency across Krillo categories
   const densityScore = scoreFromIssueDensity(issues.length, 15, 7, 3, issues);
   const score = Math.round((penaltyScore + densityScore) / 2);
 

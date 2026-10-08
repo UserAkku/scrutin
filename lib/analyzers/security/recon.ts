@@ -119,7 +119,7 @@ export async function runReconModule(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            client: { clientId: "scrutin", clientVersion: "1.0" },
+            client: { clientId: "krillo", clientVersion: "1.0" },
             threatInfo: {
               threatTypes: ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE"],
               platformTypes: ["ANY_PLATFORM"],
@@ -157,7 +157,7 @@ export async function runReconModule(
     try {
       const hibpRes = await safeFetchWithTimeout(
         `https://haveibeenpwned.com/api/v3/breaches?domain=${hostname}`,
-        { headers: { "hibp-api-key": hibpKey, "user-agent": "Scrutin" } },
+        { headers: { "hibp-api-key": hibpKey, "user-agent": "Krillo" } },
         10000
       );
       if (hibpRes && hibpRes.ok) {

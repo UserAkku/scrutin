@@ -61,6 +61,24 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
     }
   };
 
+  const [isEmailing, setIsEmailing] = useState(false);
+  const handleEmailReport = async () => {
+    setIsEmailing(true);
+    try {
+      const res = await fetch(`/api/audit/${audit.id}/email`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send email");
+      alert("Report emailed successfully!");
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : "Failed to send email");
+    } finally {
+      setIsEmailing(false);
+    }
+  };
+
   const categoryIssues = useMemo(() => ({
     performance: audit.issues.filter((i: any) => i.category === "performance"),
     seo: audit.issues.filter((i: any) => i.category === "seo"),
@@ -123,14 +141,33 @@ export function AuditReportClient({ audit, currentUserId }: { audit: any; curren
               )}
             </div>
           </div>
-          <div className="w-full sm:w-auto">
-            <PDFExport
-              audit={{
-                url: audit.url,
-                overallScore: audit.overallScore,
-                issues: audit.issues,
-              }}
-            />
+          <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+            {!locked ? (
+              <>
+                <button
+                  onClick={handleEmailReport}
+                  disabled={isEmailing}
+                  className="px-4 py-1.5 sm:px-6 sm:py-2 bg-white text-brutal-black font-display text-sm sm:text-base uppercase tracking-wider rounded-lg border-[2px] border-brutal-black hover:bg-[var(--pastel-green)] transition-colors flex items-center justify-center gap-2 h-full w-full disabled:opacity-50"
+                >
+                  {isEmailing ? "Sending..." : "Email Report"}
+                </button>
+                <PDFExport
+                  audit={{
+                    url: audit.url,
+                    overallScore: audit.overallScore,
+                    issues: audit.issues,
+                  }}
+                />
+              </>
+            ) : (
+              <button
+                disabled
+                className="px-4 py-1.5 sm:px-6 sm:py-2 bg-gray-200 text-gray-500 font-display text-sm sm:text-base uppercase tracking-wider rounded-lg border-[2px] border-gray-400 flex items-center justify-center gap-2 h-full w-full opacity-50 cursor-not-allowed"
+                title="Sign up to unlock exports"
+              >
+                🔒 Export Locked
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
-# Scrutin 🔍
+# Krillo 🔍
 
-Scrutin is a web application designed to perform comprehensive Website SEO and Auditing, generating detailed insights using the Google Generative AI (Gemini). It features user authentication, a dashboard to manage audits, real-time website scraping using Puppeteer, and PDF report generation.
+Krillo is a web application designed to perform comprehensive Website SEO and Auditing, generating detailed insights using the Google Generative AI (Gemini). It features user authentication, a dashboard to manage audits, real-time website scraping using Puppeteer, and PDF report generation.
 
 ## 🌟 Key Features
 
@@ -28,7 +28,7 @@ Scrutin is a web application designed to perform comprehensive Website SEO and A
 ## 📁 Project Structure
 
 ```bash
-scrutin/
+krillo/
 ├── app/                  # Next.js App Router Next.js pages
 │   ├── (auth)/           # Authentication routes (login, register)
 │   ├── (dashboard)/      # Dashboard & history
@@ -52,8 +52,8 @@ Make sure you have Node.js (v20+) and your preferred package manager (`npm`, `ya
 ### 1. Clone the repository
 
 ```bash
-git clone git@github.com:UserAkku/scrutin.git
-cd scrutin
+git clone git@github.com:UserAkku/krillo.git
+cd krillo
 ```
 
 ### 2. Install dependencies
