@@ -128,7 +128,6 @@ export function AuditProgressView({
 }: AuditProgressViewProps) {
   const [progress, setProgress] = useState(initialProgress);
   const [status, setStatus] = useState(initialStatus);
-  const [currentStep, setCurrentStep] = useState(initialStep ?? "Initialising");
   const [elapsed, setElapsed] = useState(0);
   const [dots, setDots] = useState(".");
 
@@ -147,7 +146,6 @@ export function AuditProgressView({
 
       setProgress(data.progress ?? 0);
       setStatus(data.status);
-      setCurrentStep(data.currentStep ?? "Processing");
       setElapsed(data.elapsedMs ?? 0);
 
       if (data.status === "complete") {
@@ -168,6 +166,12 @@ export function AuditProgressView({
   const completedCount = CATEGORIES.filter(
     ({ range }) => getCategoryStatus(progress, range) === "complete"
   ).length;
+
+  // Sync the top level label with whatever the progress bar actually shows as running
+  const runningCategory = CATEGORIES.find(
+    ({ range }) => getCategoryStatus(progress, range) === "running"
+  );
+  const displayStep = status === "complete" ? "Complete" : (runningCategory?.label || "Processing");
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-4 py-16 gap-12 bg-[var(--bg)]">
@@ -209,7 +213,7 @@ export function AuditProgressView({
               Current step
             </p>
             <p className="text-2xl font-display uppercase">
-              {currentStep}{dots}
+              {displayStep}{dots}
             </p>
           </div>
           <div className="text-right">

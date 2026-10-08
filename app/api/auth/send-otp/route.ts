@@ -63,14 +63,18 @@ export async function POST(req: Request) {
     });
 
     if (!emailResponse.success) {
-      throw new Error(emailResponse.error);
+      console.error("Email response failed:", emailResponse);
+      return NextResponse.json(
+        { error: emailResponse.error || "Failed to send OTP email via Brevo" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("OTP send error:", error);
     return NextResponse.json(
-      { error: "Failed to send OTP" },
+      { error: error.message || "Failed to send OTP" },
       { status: 500 }
     );
   }
